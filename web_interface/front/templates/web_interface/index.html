@@ -1,0 +1,34 @@
+{% extends "web_interface/base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h2>Welcome :)</h2>
+
+<a href="/lights-off"><button type="button" class="btn btn-dark">All Lights off</button></a>
+<a href="/lights-on"><button type="button" class="btn btn-success">All lights on</button></a>
+
+<table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>State</th>
+        <th>State</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for light in lights %}
+        <tr>
+            <td>{{ light.name }}</td>
+            <td>{{ light.light_type }}</td>
+            <td>{{ light.state }}</td>
+            <td>
+                <a href="/light/{{ light.id }}/off"><button type="button" class="btn btn-dark">Lights off</button></a>
+                <a href="/light/{{ light.id }}/on"><button type="button" class="btn btn-success">Lights on</button></a>
+            </td>
+          </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Home Automation {% block title %}{% endblock %}</title>
+  {% load bootstrap5 %}
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+</head>
+
+<body>
+<div class="container-fluid p-5 bg-primary text-white text-center">
+  <h1>Home automation</h1>
+  <p>Don't worry, be happy.</p>
+</div>
+
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-sm-12">
+       {% block content %}
+        {% endblock %}
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
