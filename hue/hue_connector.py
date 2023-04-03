@@ -31,37 +31,41 @@ class HueConnector:
         return lights
 
     def create_light_object_from_json(self, id, json_light) -> Light:
-        try:
-            name = json_light["name"]
-            min_dim_level = json_light["capabilities"]["control"]["mindimlevel"]
-            max_lumen = json_light["capabilities"]["control"]["maxlumen"]
-            light_type = json_light["type"]
-            state = DeviceState.OFF
-            if json_light["state"]["on"] == True:
-                state = DeviceState.ON
+        name = json_light["name"]
+        min_dim_level = json_light["capabilities"]["control"]["mindimlevel"]
+        max_lumen = json_light["capabilities"]["control"]["maxlumen"]
+        light_type = json_light["type"]
+        state = DeviceState.OFF
+        if json_light["state"]["on"] == True:
+            state = DeviceState.ON
 
-            return Light(id, name, min_dim_level, max_lumen, light_type, state)
-        except Exception as e:
-            print(e)
-            return None
+        return Light(id, name, min_dim_level, max_lumen, light_type, state)
 
     def set_light_on_state(self, light_id: int, state: str) -> str:
         return self.run_put_request("lights/%s/state" % light_id, "{\"on\": %s}" % state)
 
     def run_put_request(self, path, data):
-        full_path = self.get_full_path(path)
-        request = requests.put(full_path, data, timeout=2.50)
-        if request.status_code == 200:
-            return request.text
-        else:
+        try:
+            full_path = self.get_full_path(path)
+            request = requests.put(full_path, data, timeout=2.50)
+            if request.status_code == 200:
+                return request.text
+            else:
+                return None
+        except Exception as e:
+            print(e)
             return None
 
     def run_get_request(self, path):
-        full_path = self.get_full_path(path)
-        request = requests.get(full_path, timeout=2.50)
-        if request.status_code == 200:
-            return request.text
-        else:
+        try:
+            full_path = self.get_full_path(path)
+            request = requests.get(full_path, timeout=2.50)
+            if request.status_code == 200:
+                return request.text
+            else:
+                return None
+        except Exception as exception:
+            print(exception)
             return None
 
     def get_full_path(self, path):
@@ -69,7 +73,7 @@ class HueConnector:
 
     def get_connection_settings(self):
         """
-        [TODO] automatically load the hue settings if not configured in the env file
+        [TODO] Use this method to automatically load the hue settings if not configured in the env file
         :return:
         """
         connection_data = self.run_get_request(DISCOVER_PATH)
