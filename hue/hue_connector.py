@@ -13,10 +13,11 @@ DISCOVER_PATH = "https://discovery.meethue.com/"
 
 class HueConnector:
 
-    def connect(self):
+    def __init__(self):
         print("connecting")
         self.settings = Settings()
         self.lights = self.get_lights()
+
 
     def get_lights(self) -> List[Light]:
         lights = []
@@ -26,9 +27,19 @@ class HueConnector:
             lights = []
             for key, value in lights_from_json.items():
                 lights.append(self.create_light_object_from_json(key, value))
-                self.set_light_on_state(lights.pop().id, "false")
             return lights
         return lights
+
+    def turn_all_lights_on(self):
+        self.__set__all_light_on_state("true")
+
+
+    def turn_all_lights_off(self):
+        self.__set__all_light_on_state("false")
+
+    def __set__all_light_on_state(self, state: str):
+        for light in self.get_lights():
+            self.set_light_on_state(light.id, state)
 
     def create_light_object_from_json(self, id, json_light) -> Light:
         name = json_light["name"]
@@ -53,6 +64,7 @@ class HueConnector:
             else:
                 return None
         except Exception as e:
+            print("exception")
             print(e)
             return None
 
@@ -65,6 +77,7 @@ class HueConnector:
             else:
                 return None
         except Exception as exception:
+            print("exception")
             print(exception)
             return None
 
