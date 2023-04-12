@@ -30,5 +30,21 @@
           </tr>
       {% endfor %}
     </tbody>
-  </table>
+</table>
+<table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for sensor in sensors %}
+        <tr>
+            <td>{{ sensor.name }}</td>
+            <td>{{ sensor.sensor_type }}</td>
+          </tr>
+      {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
