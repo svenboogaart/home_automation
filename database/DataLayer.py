@@ -1,5 +1,9 @@
 from sqlalchemy import create_engine, text, MetaData, Column, Integer, Table, String, ForeignKey
+from sqlalchemy.orm import DeclarativeBase
 
+
+class Base(DeclarativeBase):
+    pass
 
 class DataLayer:
 

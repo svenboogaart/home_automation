@@ -39,11 +39,12 @@ class LightsManager(ElementManager):
         min_dim_level = json_light["capabilities"]["control"]["mindimlevel"]
         max_lumen = json_light["capabilities"]["control"]["maxlumen"]
         light_type = json_light["type"]
+        unique_id = json_light["uniqueid"]
         state = DeviceState.OFF
         if json_light["state"]["on"] == True:
             state = DeviceState.ON
 
-        return Light(id, name, min_dim_level, max_lumen, light_type, state)
+        return Light(id, unique_id, name, min_dim_level, max_lumen, light_type, state)
 
     def set_light_on_state(self, light_id: int, state: str) -> str:
         return self.run_put_request("lights/%s/state" % light_id, "{\"on\": %s}" % state)
