@@ -13,8 +13,8 @@
       <tr>
         <th>Name</th>
         <th>Type</th>
-        <th>State</th>
-        <th>State</th>
+        <th>Change state</th>
+        <th>Check</th>
       </tr>
     </thead>
     <tbody>
@@ -22,10 +22,16 @@
         <tr>
             <td>{{ light.name }}</td>
             <td>{{ light.light_type }}</td>
-            <td>{{ light.state }}</td>
             <td>
-                <a href="/light/{{ light.id }}/off"><button type="button" class="btn btn-dark">Lights off</button></a>
-                <a href="/light/{{ light.id }}/on"><button type="button" class="btn btn-success">Lights on</button></a>
+                {% if light.light_state.device_state.value == 3 %}
+                    <a href="/light/{{ light.id }}/off"><button type="button" class="btn btn-danger">Turn off</button></a>
+                {% elif light.light_state.device_state.value == 4 %}
+                    <a href="/light/{{ light.id }}/on"><button type="button" class="btn btn-success">Turn on</button></a>
+                {% endif %}
+
+            </td>
+            <td>
+                <a href="/light/{{ light.id }}/warning"><button type="button" class="btn btn-success">Check</button></a>
             </td>
           </tr>
       {% endfor %}

@@ -10,11 +10,10 @@ class Migration:
         self.lights_manager = lights_manager
 
     def migrate(self):
-        self.connection = sqlite3.connect('databases/smart_home.db')  # file path
+        self.connection = sqlite3.connect('database/databases/smart_home.db')  # file path
         # create a cursor object from the cursor class
         cur = self.connection.cursor()
         self.create_tables_if_not_exist(cur)
-        self.store_lights(cur)
         self.connection.commit()
         print("\nDatabase migrated successfully!!!")
         self.connection.close()
@@ -33,26 +32,8 @@ class Migration:
            CREATE TABLE IF NOT EXISTS light_states(
                 id integer PRIMARY KEY,
                 light_id TEXT,
+                state TEXT,
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(light_id) REFERENCES lights(id)
            )''')
 
-
-    def store_lights(self, cur):
-
-        existing_lights_unique_ids = []
-        for row in cur.execute("SELECT id FROM lights").fetchall():
-            existing_lights_unique_ids.append(row[0])
-        found_lights = self.lights_manager.get_lights()
-
-        insert_data = []
-        for light in found_lights:
-            if light.unique_id not in existing_lights_unique_ids:
-                print(light.unique_id)
-                insert_data.append((light.unique_id, light.name, light.light_type))
-        cur.executemany("INSERT INTO lights (id, name, type) VALUES(?, ?, ?)", insert_data)
-
-hue_connector = HueConnector()
-lights_manager = LightsManager(hue_connector)
-migration = Migration(lights_manager)
-migration.migrate()
