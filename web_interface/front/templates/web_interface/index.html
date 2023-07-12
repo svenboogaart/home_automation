@@ -1,0 +1,58 @@
+{% extends "web_interface/base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h2>Welcome :)</h2>
+
+<a href="/lights-off"><button type="button" class="btn btn-dark">All Lights off</button></a>
+<a href="/lights-on"><button type="button" class="btn btn-success">All lights on</button></a>
+
+<table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Change state</th>
+        <th>Check</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for light in lights %}
+        <tr>
+            <td>{{ light.name }}</td>
+            <td>{{ light.light_type }}</td>
+            <td>
+                {% if light.light_state.device_state.value == 3 %}
+                    <a href="/light/{{ light.id }}/off"><button type="button" class="btn btn-danger">Turn off</button></a>
+                {% elif light.light_state.device_state.value == 4 %}
+                    <a href="/light/{{ light.id }}/on"><button type="button" class="btn btn-success">Turn on</button></a>
+                {% endif %}
+
+            </td>
+            <td>
+                <a href="/light/{{ light.id }}/warning"><button type="button" class="btn btn-success">Check</button></a>
+            </td>
+          </tr>
+      {% endfor %}
+    </tbody>
+</table>
+<table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Last update</th>
+        <th>Last update type</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for switch in switches %}
+        <tr>
+            <td>{{ switch.name }}</td>
+            <td>{{ switch.switch_state.last_updated }}</td>
+            <td>{{ switch.switch_state.button_event }}</td>
+          </tr>
+      {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
