@@ -10,7 +10,7 @@ from settings.settings import Settings
 
 if __name__ == '__main__':
     print("Starting home automation")
-    settings =  Settings()
+    settings = Settings()
     hue_connection = HueConnector(settings)
     database_layer = DataLayer()
     hue_lights_manager = HueLightsHandler(hue_connection, database_layer)

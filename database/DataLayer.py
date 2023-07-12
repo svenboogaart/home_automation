@@ -19,7 +19,6 @@ class DataLayer:
 
         # create a cursor object from the cursor class
         self.cur = self.connection.cursor()
-        print("\nDatabase migrated successfully!!!")
 
 
     def store_lights(self, found_lights):

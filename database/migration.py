@@ -15,7 +15,7 @@ class Migration:
         cur = self.connection.cursor()
         self.create_tables_if_not_exist(cur)
         self.connection.commit()
-        print("\nDatabase migrated successfully!!!")
+        print("Database migrated")
         self.connection.close()
         # committing our connection
 

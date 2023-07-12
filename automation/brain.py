@@ -3,7 +3,7 @@ import time
 from helpers.enums.device_state import DeviceState
 
 TICK_TIME_SECONDS = 5
-
+import os
 
 class Brain:
 
@@ -49,7 +49,10 @@ class Brain:
             if light.state_changed():
                 #print(light.unique_id, " Light changed to ", light.light_state.device_state, " was ", light.last_states[-2].device_state)
                 if self.settings.alarm_active and light.light_state.device_state == DeviceState.ON:
-                    print("Calling the cops, lights should not go on while alarm is active.")
+                    print("Intruder detected")
+                    if self.settings.alarm_play_sound:
+                        os.system('say "Intruder detected, calling police."')
+                        os.system(f"afplay {self.settings.alarm_mp3_file}")
 
     def __process_switch_events(self):
         for switch in self.switches_manager.get_switches():
