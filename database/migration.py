@@ -1,12 +1,12 @@
 import sqlite3
 
 from hue.hue_connector import HueConnector
-from hue.lights.lights_manager import LightsManager
+from hue.lights.hue_lights_handler import HueLightsHandler
 
 
 class Migration:
 
-    def __init__(self, lights_manager : LightsManager):
+    def __init__(self, lights_manager : HueLightsHandler):
         self.lights_manager = lights_manager
 
     def migrate(self):
@@ -30,10 +30,38 @@ class Migration:
 
         cur.execute('''
            CREATE TABLE IF NOT EXISTS light_states(
-                id integer PRIMARY KEY,
-                light_id TEXT,
+                id INTEGER PRIMARY KEY,
+                light_id INTEGER,
                 state TEXT,
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(light_id) REFERENCES lights(id)
            )''')
 
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS switches(
+                 id TEXT PRIMARY KEY,
+                 name TEXT NOT NULL,
+                 registration_date DATETIME DEFAULT CURRENT_TIMESTAMP
+            )''')
+
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS switch_event_options(
+                 id INTEGER PRIMARY KEY,
+                 switch_id TEXT,
+                 button_event TEXT,
+                 event_type TEXT,
+                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                 FOREIGN KEY(switch_id) REFERENCES switches(id)                 
+            )''')
+
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS switch_event(
+                 id integer,
+                 event_timestamp TIMESTAMP,
+                 switch_id TEXT,
+                 switch_event_option_id INTEGER,
+                 data_onboarded_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                 FOREIGN KEY(switch_id) REFERENCES switches(id)
+                 FOREIGN KEY(switch_event_option_id) REFERENCES switch_event_options(id)
+                 PRIMARY KEY(id,event_timestamp)
+            )''')

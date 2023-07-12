@@ -1,12 +1,8 @@
 import json
-from typing import List
 
 import requests as requests
 
-from enums.device_state import DeviceState
 from hue.connection_settings import ConnectionSettings
-from hue.lights.light import Light
-from hue.sensors.sensor import Sensor
 from settings.settings import Settings
 
 DISCOVER_PATH = "https://discovery.meethue.com/"
@@ -14,8 +10,8 @@ DISCOVER_PATH = "https://discovery.meethue.com/"
 
 class HueConnector:
 
-    def __init__(self):
-        self.settings = Settings()
+    def __init__(self, settings):
+        self.settings = settings
 
     def run_put_request(self, path, data):
         try:

@@ -41,14 +41,16 @@
     <thead>
       <tr>
         <th>Name</th>
-        <th>Type</th>
+        <th>Last update</th>
+        <th>Last update type</th>
       </tr>
     </thead>
     <tbody>
-    {% for sensor in sensors %}
+    {% for switch in switches %}
         <tr>
-            <td>{{ sensor.name }}</td>
-            <td>{{ sensor.sensor_type }}</td>
+            <td>{{ switch.name }}</td>
+            <td>{{ switch.switch_state.last_updated }}</td>
+            <td>{{ switch.switch_state.button_event }}</td>
           </tr>
       {% endfor %}
     </tbody>
