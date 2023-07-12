@@ -14,3 +14,11 @@ class Settings:
         self.hue_ip_address = os.getenv(ENV_HUE_IP_ADDRESS_KEY)
         self.should_log_data = os.getenv(LOG_DATA) == "True"
         self.alarm_active = False
+
+    def set_alarm_active_state(self, state_to_set_alarm):
+        if not state_to_set_alarm and self.alarm_active:
+            self.alarm_active = False
+            print("Turning alarm off")
+        elif state_to_set_alarm and not self.alarm_active:
+            self.alarm_active = True
+            print("Turning alarm on")
