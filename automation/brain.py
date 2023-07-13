@@ -1,17 +1,22 @@
 import time
 
 from helpers.enums.device_state import DeviceState
+from hue.lights.lights_manager import LightsManager
+from hue.sensors.switches_manager import SwitchesManager
+from settings.settings import Settings
+from twilio.rest import Client
 
 TICK_TIME_SECONDS = 5
 import os
 
 class Brain:
 
-    def __init__(self, database_layer, lights_manager, switches_manager, settings):
+    def __init__(self, database_layer, lights_manager : LightsManager, switches_manager: SwitchesManager, settings: Settings):
         self.database_layer = database_layer
         self.lights_manager = lights_manager
         self.switches_manager = switches_manager
         self.settings = settings
+        self.sms_send_after_alarm_activated = False
 
     def control_automation(self):
         self.start_brain()
@@ -53,6 +58,7 @@ class Brain:
                     if self.settings.alarm_play_sound:
                         os.system('say "Intruder detected, calling police."')
                         os.system(f"afplay {self.settings.alarm_mp3_file}")
+                    self.__send_sms("Intruder alarm")
 
     def __process_switch_events(self):
         for switch in self.switches_manager.get_switches():
@@ -61,5 +67,21 @@ class Brain:
                     self.settings.set_alarm_active_state(True)
                 elif switch.switch_state.release_hold and switch.switch_state.button_pressed == 1 :
                     self.settings.set_alarm_active_state(False)
+                    self.sms_send_after_alarm_activated = False
+
+    def __send_sms(self, content):
+        if not self.sms_send_after_alarm_activated and self.settings.twilio_account_ssd:
+            client = Client(self.settings.twilio_account_ssd, self.settings.twilio_auth_token)
+
+            message = client.messages.create(
+                from_= "svenhome",
+                body = content,
+                to = self.settings.sms_receiver_number
+            )
+            self.sms_send_after_alarm_activated = True
+            print(f"Sms has been send: {message.sid}")
+        else:
+            print("No sms has been send")
+
 
 

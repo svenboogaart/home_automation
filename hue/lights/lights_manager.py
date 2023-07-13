@@ -2,7 +2,7 @@ from typing import List
 
 from hue.lights.hue_lights_handler import HueLightsHandler
 from hue.lights.light import Light
-
+import asyncio
 
 class LightsManager:
     known_lights = {}
@@ -23,6 +23,10 @@ class LightsManager:
             self.known_lights[light.unique_id].add_state(light.light_state)
         else:
             self.known_lights[light.unique_id] = light
+
+    def alarm_lights(self, time_flash, time_pause, number_of_flashes):
+        for light in self._lights_handler.get_lights():
+             self._lights_handler.alarm_light(light.id, time_flash, time_pause, number_of_flashes)
 
     def get_light(self, id: int):
         if id in self.known_lights:
