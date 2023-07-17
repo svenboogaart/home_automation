@@ -2,7 +2,7 @@ import json
 
 import requests as requests
 
-from hue.connection_settings import ConnectionSettings
+from hue.hue_connection_settings import HueConnectionSettings
 from settings.settings import Settings
 
 DISCOVER_PATH = "https://discovery.meethue.com/"
@@ -54,7 +54,7 @@ class HueConnector:
             internalipaddress = loaded_data[0]["internalipaddress"]
             port = loaded_data[0]["port"]
             print("Can connect")
-            return ConnectionSettings(id, internalipaddress, port)
+            return HueConnectionSettings(id, internalipaddress, port)
         else:
             print("Connecting to the bridge not possible.")
             return None

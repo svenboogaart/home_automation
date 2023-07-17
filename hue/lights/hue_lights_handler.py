@@ -4,13 +4,14 @@ from typing import List
 
 from database.DataLayer import DataLayer
 from helpers.enums.device_state import DeviceState
-from hue.element_manager import ElementManager
+from helpers.enums.hue_colors import HueColor
+from hue.hue_manager_abc import HueManagerAbc
 from hue.hue_connector import HueConnector
-from hue.lights.LightState import LightState
-from hue.lights.light import Light
+from models.lights.LightState import LightState
+from models.lights.light import Light
 
 
-class HueLightsHandler(ElementManager):
+class HueLightsHandler(HueManagerAbc):
 
     def __init__(self, hue_connector: HueConnector, data_layer: DataLayer):
         self.data_layer = data_layer
@@ -75,12 +76,15 @@ class HueLightsHandler(ElementManager):
                 "sat": new_state.saturation}
         return self.hue_connector.run_put_request("lights/%s/state" % light_id, json.dumps(data))
 
-    def alarm_light(self, light_id, time_flash, time_pause, number_of_flashes):
+    def alarm_light(self, light_id, time_flash, time_pause, number_of_flashes, hue=HueColor.RED):
         light = self.get_light(light_id)
         current_state = light.light_state
-        new_state = LightState(current_state.brightness, 222, current_state.saturation, DeviceState.ON)
+        on_state = LightState(100, hue, current_state.saturation, DeviceState.ON)
+        off_state = LightState(current_state.brightness, hue, current_state.saturation, DeviceState.OFF)
         for x in range(number_of_flashes):
+            print(self.set_light_state(light.id, on_state))
             time.sleep(time_flash)
-            print(self.set_light_state(light.id, new_state))
+            self.set_light_state(light.id, off_state)
             time.sleep(time_pause)
-            self.set_light_state(light.id, current_state)
+
+        self.set_light_state(light.id, current_state)

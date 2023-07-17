@@ -2,14 +2,13 @@ import json
 from typing import List
 
 from helpers.constants import SensorTypes
-from hue.element_manager import ElementManager
+from hue.hue_manager_abc import HueManagerAbc
 from hue.hue_connector import HueConnector
-from hue.sensors.motion_sensor import MotionSensor
-from hue.sensors.sensor import Sensor
-from hue.sensors.switch import Switch
+from models.sensors.motion_sensor import MotionSensor
+from models.sensors.switch import Switch
 
 
-class HueSensorsManager(ElementManager):
+class HueSensorsManager(HueManagerAbc):
 
     def __init__(self, hue_connector: HueConnector):
         super().__init__(hue_connector)
@@ -19,6 +18,12 @@ class HueSensorsManager(ElementManager):
         for index, switch_data in self.get_sensor_json(SensorTypes.SWITCH).items():
             switches.append(self.__create_switch_sensor_from_json(index, switch_data))
         return switches
+
+    def get_motion_sensors(self) -> List[MotionSensor]:
+        motion_sensors = []
+        for index, switch_data in self.get_sensor_json(SensorTypes.MOTION).items():
+            motion_sensors.append(self.__create_motion_sensor_from_json(index, switch_data))
+        return motion_sensors
 
     def get_sensor_json(self, sensor_type=None):
         sensors_json = {}
@@ -41,3 +46,12 @@ class HueSensorsManager(ElementManager):
         button_event = json_sensor["state"]["buttonevent"]
         last_updated = json_sensor["state"]["lastupdated"]
         return Switch(id, unique_id, name, SensorTypes.SWITCH, button_event, last_updated)
+
+
+
+    def __create_motion_sensor_from_json(self, id, json_sensor) -> MotionSensor:
+        name = json_sensor["name"]
+        unique_id = json_sensor["uniqueid"]
+        presence = json_sensor["state"]["presence"]
+        last_updated = json_sensor["state"]["lastupdated"]
+        return MotionSensor(id, unique_id, name, SensorTypes.MOTION, presence, last_updated)

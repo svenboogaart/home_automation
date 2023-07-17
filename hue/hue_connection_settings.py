@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class ConnectionSettings:
+class HueConnectionSettings:
 
 
     id: str

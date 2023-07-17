@@ -1,4 +1,4 @@
-from hue.sensors.sensor import Sensor
+from models.sensors.sensor import Sensor
 
 
 class DayLightSensor(Sensor):

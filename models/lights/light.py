@@ -1,5 +1,5 @@
 from helpers.enums.device_state import DeviceState
-from hue.lights.LightState import LightState
+from models.lights.LightState import LightState
 
 
 class Light:

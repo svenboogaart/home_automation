@@ -1,4 +1,4 @@
-from hue.sensors.sensor import Sensor
+from models.sensors.sensor import Sensor
 
 
 class SwitchState:
@@ -31,12 +31,12 @@ class Switch(Sensor):
     def __init__(self, id, unique_id, name, sensor_type, button_event, last_updated):
         super().__init__(id, name, sensor_type)
         self.unique_id = unique_id
-        self.switch_state = SwitchState(button_event, last_updated)
+        self.state = SwitchState(button_event, last_updated)
         self.last_states = []
 
     def add_state(self, state: SwitchState):
         self.last_states.append(state)
-        self.switch_state = state
+        self.state = state
 
     def state_changed(self):
         try:

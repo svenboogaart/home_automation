@@ -4,9 +4,8 @@ from typing import List
 from sqlalchemy.orm import DeclarativeBase
 
 from helpers.enums.device_state import DeviceState
-from hue.lights.light import Light
-from hue.sensors.motion_sensor import MotionSensor
-from hue.sensors.switch import Switch
+from models.lights.light import Light
+from models.sensors.switch import Switch
 
 
 class Base(DeclarativeBase):
