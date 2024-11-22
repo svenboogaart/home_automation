@@ -26,6 +26,7 @@ class HueLightsHandler(HueManagerAbc):
                 lights.append(self.create_light_object_from_json(key, value))
         return [light for light in lights if light is not None]
 
+
     def get_light(self, light_id: int) -> Light | None:
         light_data = self.hue_connector.run_get_request(f"lights/{light_id}")
         if light_data:
