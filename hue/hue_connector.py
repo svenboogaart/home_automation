@@ -22,7 +22,7 @@ class HueConnector:
             else:
                 return None
         except Exception as e:
-            print("exception")
+            print("exception in run_put_request")
             print(e)
             return None
 
@@ -35,7 +35,7 @@ class HueConnector:
             else:
                 return None
         except Exception as exception:
-            print("exception")
+            print("exception in run_get_request")
             print(exception)
             return None
 

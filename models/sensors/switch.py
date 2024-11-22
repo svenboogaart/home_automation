@@ -39,6 +39,8 @@ class Switch(Sensor):
         self.state = state
 
     def state_changed(self):
+        if len(self.last_states) < 2:
+            return True
         try:
             return self.last_states[-1] != self.last_states[-2]
         except IndexError:

@@ -14,13 +14,15 @@ class Light:
         self.max_lumen = max_lumen
         self.light_type = light_type
         self.light_state = LightState(brightness, hue, saturation, device_state)
-        self.last_states = []
+        self.last_states = [self.light_state]
 
     def add_state(self, state: LightState):
         self.light_state = state
         self.last_states.append(state)
 
     def state_changed(self):
+        if len(self.last_states) < 2:
+            return True
         try:
             return self.last_states[-1] != self.last_states[-2]
         except IndexError:

@@ -30,12 +30,15 @@ class Migration:
 
         cur.execute('''
            CREATE TABLE IF NOT EXISTS light_states(
-                id INTEGER PRIMARY KEY,
                 light_id INTEGER,
+                brightness INTEGER,
+                hue INTEGER,
+                saturation INTEGER,
                 state TEXT,
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(light_id) REFERENCES lights(id)
            )''')
+
 
         cur.execute('''
             CREATE TABLE IF NOT EXISTS switches(
@@ -44,24 +47,37 @@ class Migration:
                  registration_date DATETIME DEFAULT CURRENT_TIMESTAMP
             )''')
 
-        cur.execute('''
-            CREATE TABLE IF NOT EXISTS switch_event_options(
-                 id INTEGER PRIMARY KEY,
-                 switch_id TEXT,
-                 button_event TEXT,
-                 event_type TEXT,
-                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                 FOREIGN KEY(switch_id) REFERENCES switches(id)                 
-            )''')
 
         cur.execute('''
-            CREATE TABLE IF NOT EXISTS switch_event(
-                 id integer,
-                 event_timestamp TIMESTAMP,
+            CREATE TABLE IF NOT EXISTS switch_event(    
+                 id INTEGER PRIMARY KEY  AUTOINCREMENT,
                  switch_id TEXT,
-                 switch_event_option_id INTEGER,
+                 last_updated TIMESTAMP,
+                 button_pressed INTEGER,
+                 hold INTEGER,
+                 release INTEGER,
+                 release_hold INTEGER,
+                 button_event INTEGER,
                  data_onboarded_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                  FOREIGN KEY(switch_id) REFERENCES switches(id)
-                 FOREIGN KEY(switch_event_option_id) REFERENCES switch_event_options(id)
-                 PRIMARY KEY(id,event_timestamp)
             )''')
+
+
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS motion_sensors(
+                 id TEXT PRIMARY KEY,
+                 name TEXT NOT NULL,
+                 registration_date DATETIME DEFAULT CURRENT_TIMESTAMP
+            )''')
+
+
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS motion_sensor_events(  
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                motion_sensor_id TEXT,
+                presence_detected integer,
+                last_updated TIMESTAMP, 
+                data_onboarded_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(motion_sensor_id) REFERENCES motion_sensors(id)
+            )''')
+

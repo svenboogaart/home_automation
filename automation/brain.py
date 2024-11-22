@@ -31,15 +31,15 @@ class Brain:
     def control_automation(self):
         self.start_brain()
         print("The home is now running in automation mode.")
-        starttime = time.time()
+        start_time = time.time()
         while True:
-            time.sleep(1.0 - ((time.time() - starttime) % 1.0))
+            time.sleep(1.0 - ((time.time() - start_time) % 1.0))
             self.update()
 
     def start_brain(self):
         print("Preparing brain")
-        self.database_layer.store_lights(self.lights_manager.get_lights())
-        self.database_layer.store_switches(self.switches_manager.get_switches())
+        # self.database_layer.store_lights(self.lights_manager.get_lights())
+        # self.database_layer.store_switches(self.switches_manager.get_switches())
 
     def update(self):
         # print("Brain is processing data.")
@@ -54,7 +54,22 @@ class Brain:
 
     def __log_data(self):
         if self.settings.should_log_data:
-            self.database_layer.log_light_states(self.lights_manager.get_lights())
+            self.database_layer.store_lights(self.lights_manager.get_lights())
+            self.database_layer.store_switches(self.switches_manager.get_switches())
+
+            for switch in self.switches_manager.get_switches():
+                if switch.state_changed():
+                    self.database_layer.log_switch_event(switch)
+
+            for light in self.lights_manager.get_lights():
+                if light.state_changed():
+                    self.database_layer.log_light_state(light)
+
+            self.database_layer.log_motion_sensors(self.motion_sensor_manager.get_sensors())
+
+            for motion_sensor in self.motion_sensor_manager.get_sensors():
+                if motion_sensor.state_changed():
+                    self.database_layer.log_motion_sensor_event(motion_sensor)
 
     def __event_based_processing(self):
         self.__process_switch_events()
@@ -65,8 +80,8 @@ class Brain:
         if self.settings.alarm_active:
             for light in self.lights_manager.get_lights():
                 if light.state_changed():
-                    pass
-                    # #print(light.unique_id, " Light changed to ", light.light_state.device_state, " was ", light.last_states[-2].device_state)
+                    print(light.unique_id, " Light changed to ", light.light_state.device_state, " was ",
+                          light.last_states[-2].device_state)
                     # if light.light_state.device_state == DeviceState.ON:
                     #     print("Intruder detected")
                     #     if self.settings.alarm_play_sound:
@@ -101,9 +116,10 @@ class Brain:
         print(f"Sms has been send: {message.sid}")
 
     def __process_motion_events(self):
-        if self.settings.alarm_active:
-            for motion_sensor in self.motion_sensor_manager.get_sensors():
-                if motion_sensor.state_changed() and motion_sensor.state.presence:
+
+        for motion_sensor in self.motion_sensor_manager.get_sensors():
+            if motion_sensor.motion_detected():
+                if self.settings.alarm_active:
                     print("Motion detected!")
                     if self.settings.alarm_play_sound:
                         self.audio_manager.play_alarm_sound()
@@ -111,3 +127,5 @@ class Brain:
                         self.sms_manager.send_sms("Intruder alarm")
                     if self.settings.hue_status_light:
                         self.lights_manager.alarm_light(self.settings.hue_status_light, 1.0, 2.0, 2)
+                else:
+                    print("Motion detected, but alarm is not active.")

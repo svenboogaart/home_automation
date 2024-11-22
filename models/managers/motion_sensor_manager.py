@@ -8,7 +8,6 @@ class MotionSensorManager:
     known_sensors = {}
 
     def __init__(self, sensor_manager: HueSensorsManager):
-        # TODO make interface for HueLightsHandler
         self._sensor_handler = sensor_manager
 
     def update_sensors(self):

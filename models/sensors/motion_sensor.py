@@ -27,7 +27,12 @@ class MotionSensor(Sensor):
         self.state = state
 
     def state_changed(self):
+        if len(self.last_states) < 2:
+            return True
         try:
             return self.last_states[-1] != self.last_states[-2]
         except IndexError:
             return False
+
+    def motion_detected(self):
+        return self.state_changed() and self.state.presence
