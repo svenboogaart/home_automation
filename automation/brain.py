@@ -1,5 +1,6 @@
 import time
-from threading import Thread
+
+from twilio.rest import Client
 
 from helpers.enums.hue_colors import HueColor
 from models.managers.audio_manager import AudioManager
@@ -8,10 +9,8 @@ from models.managers.motion_sensor_manager import MotionSensorManager
 from models.managers.sms_manager import SmsManager
 from models.managers.switches_manager import SwitchesManager
 from settings.settings import Settings
-from twilio.rest import Client
 
 TICK_TIME_SECONDS = 5
-import os
 
 
 class Brain:

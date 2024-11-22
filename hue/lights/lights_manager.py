@@ -28,4 +28,3 @@ class LightsManager:
         if id in self.known_lights:
             return self.known_lights[id]
         return None
-

@@ -1,5 +1,6 @@
 import os
 from threading import Thread
+
 from settings.settings import Settings
 
 
@@ -7,7 +8,6 @@ class AudioManager:
 
     def __init__(self, settings: Settings):
         self.__settings = settings
-
 
     def play_alarm_sound(self):
         if self.__settings.alarm_play_sound:
@@ -19,8 +19,8 @@ class AudioManager:
         self.__play_audio_file('/Users/Sven/Documents/programming/python/home_automation/resources/audio/activated.wav')
 
     def play_deactivate_sound(self):
-        self.__play_audio_file('/Users/Sven/Documents/programming/python/home_automation/resources/audio/deactivated.wav')
+        self.__play_audio_file(
+            '/Users/Sven/Documents/programming/python/home_automation/resources/audio/deactivated.wav')
 
-
-    def __play_audio_file(self, filename:str):
+    def __play_audio_file(self, filename: str):
         Thread(target=os.system, args=(f"afplay {filename}",)).start()

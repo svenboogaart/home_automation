@@ -5,8 +5,8 @@ from typing import List
 from database.DataLayer import DataLayer
 from helpers.enums.device_state import DeviceState
 from helpers.enums.hue_colors import HueColor
-from hue.hue_manager_abc import HueManagerAbc
 from hue.hue_connector import HueConnector
+from hue.hue_manager_abc import HueManagerAbc
 from models.lights.LightState import LightState
 from models.lights.light import Light
 
@@ -25,7 +25,6 @@ class HueLightsHandler(HueManagerAbc):
             for key, value in lights_from_json.items():
                 lights.append(self.create_light_object_from_json(key, value))
         return [light for light in lights if light is not None]
-
 
     def get_light(self, light_id: int) -> Light | None:
         light_data = self.hue_connector.run_get_request(f"lights/{light_id}")

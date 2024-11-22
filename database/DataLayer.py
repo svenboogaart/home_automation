@@ -3,7 +3,6 @@ from typing import List
 
 from sqlalchemy.orm import DeclarativeBase
 
-from helpers.enums.device_state import DeviceState
 from models.lights.light import Light
 from models.sensors.motion_sensor import MotionSensor
 from models.sensors.switch import Switch
@@ -12,10 +11,12 @@ from models.sensors.switch import Switch
 class Base(DeclarativeBase):
     pass
 
+
 class DataLayer:
 
     def __init__(self):
-        self.connection = sqlite3.connect('/Users/Sven/Documents/programming/python/home_automation/database/databases/smart_home.db')  # file path
+        self.connection = sqlite3.connect(
+            '/Users/Sven/Documents/programming/python/home_automation/database/databases/smart_home.db')  # file path
 
         # create a cursor object from the cursor class
         self.cur = self.connection.cursor()
@@ -42,7 +43,7 @@ class DataLayer:
             self.connection.commit()
         except Exception as e:
             # todo check which switches are new
-            print("Already got the switches in the database. ",e)
+            print("Already got the switches in the database. ", e)
 
     def log_switch_event(self, switch: Switch):
         insert_data = [
@@ -59,7 +60,6 @@ class DataLayer:
             insert_data)
         self.connection.commit()
 
-
     def store_motion_sensors(self, switches: List[Switch]):
         insert_data = []
         try:
@@ -70,7 +70,7 @@ class DataLayer:
             self.connection.commit()
         except Exception as e:
             # todo check which switches are new
-            print("Already got the switches in the database. ",e)
+            print("Already got the switches in the database. ", e)
 
     #
     # def get_light_states(self, light_id):
@@ -80,8 +80,11 @@ class DataLayer:
     #     return light_states
 
     def log_light_state(self, light: Light):
-        insert_data = [(light.unique_id, light.light_state.device_state.value, light.light_state.brightness, light.light_state.hue, light.light_state.saturation)]
-        self.cur.executemany("INSERT INTO light_states (light_id, state, brightness, hue, saturation) VALUES(?, ?, ?, ?, ?)", insert_data)
+        insert_data = [(light.unique_id, light.light_state.device_state.value, light.light_state.brightness,
+                        light.light_state.hue, light.light_state.saturation)]
+        self.cur.executemany(
+            "INSERT INTO light_states (light_id, state, brightness, hue, saturation) VALUES(?, ?, ?, ?, ?)",
+            insert_data)
         self.connection.commit()
 
     def log_motion_sensors(self, motion_sensors: List[MotionSensor]):
@@ -95,8 +98,9 @@ class DataLayer:
         except Exception as e:
             print("Failed to insert switch. ", e)
 
-
     def log_motion_sensor_event(self, motion_sensor: MotionSensor):
         insert_data = [(motion_sensor.unique_id, int(motion_sensor.state.presence), motion_sensor.state.last_updated)]
-        self.cur.executemany("INSERT INTO motion_sensor_events (motion_sensor_id, presence_detected, last_updated) VALUES(?, ?, ?)", insert_data)
+        self.cur.executemany(
+            "INSERT INTO motion_sensor_events (motion_sensor_id, presence_detected, last_updated) VALUES(?, ?, ?)",
+            insert_data)
         self.connection.commit()

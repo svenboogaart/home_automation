@@ -15,7 +15,6 @@ class SwitchesManager:
         for switch in self._sensor_handler.get_switches():
             self.update_switch(switch)
 
-
     def get_switches(self) -> List[Switch]:
         return list(self.known_switches.values())
 
@@ -29,4 +28,3 @@ class SwitchesManager:
         if id in self.known_switches:
             return self.known_switches[id]
         return None
-

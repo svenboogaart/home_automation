@@ -19,11 +19,11 @@ class SwitchState:
             return NotImplemented
 
         return self.button_event == other.button_event \
-               and self.last_updated == other.last_updated \
-               and self.button_pressed == other.button_pressed \
-               and self.hold == other.hold \
-               and self.release == other.release \
-               and self.release_hold == other.release_hold
+            and self.last_updated == other.last_updated \
+            and self.button_pressed == other.button_pressed \
+            and self.hold == other.hold \
+            and self.release == other.release \
+            and self.release_hold == other.release_hold
 
 
 class Switch(Sensor):

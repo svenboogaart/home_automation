@@ -31,7 +31,8 @@ class LightsManager:
             self._lights_handler.alarm_light(light.id, time_flash, time_pause, number_of_flashes)
 
     def alarm_light(self, light_id, time_flash, time_pause, number_of_flashes, color: HueColor = HueColor.RED):
-        Thread(target=self._lights_handler.alarm_light, args=(light_id, time_flash, time_pause, number_of_flashes, color)).start()
+        Thread(target=self._lights_handler.alarm_light,
+               args=(light_id, time_flash, time_pause, number_of_flashes, color)).start()
 
     def get_light(self, id: int):
         if id in self.known_lights:

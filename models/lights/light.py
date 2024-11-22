@@ -4,9 +4,8 @@ from models.lights.LightState import LightState
 
 class Light:
 
-
-
-    def __init__(self, id, unique_id, name, min_dim_level, max_lumen, light_type, brightness, hue, saturation, device_state: DeviceState = DeviceState.UNKNOWN, ):
+    def __init__(self, id, unique_id, name, min_dim_level, max_lumen, light_type, brightness, hue, saturation,
+                 device_state: DeviceState = DeviceState.UNKNOWN, ):
         self.id = id
         self.unique_id = unique_id
         self.name = name

@@ -8,14 +8,12 @@ from hue.sensors.hue_sensors_manager import HueSensorsManager
 
 sys.path.append('/Users/Sven/Documents/programming/python/home_automation')
 
-
 from hue.hue_connector import HueConnector
 
 hue_connector = HueConnector()
 data_later = DataLayer()
 sensor_manager = HueSensorsManager(hue_connector)
 lights_manager = HueLightsHandler(hue_connector, data_later)
-
 
 
 def index(request):
@@ -26,22 +24,24 @@ def index(request):
 
 
 def lights_on(request):
-
     print(lights_manager.turn_all_lights_on())
     return redirect('/')
 
-def lights_off(request):
 
+def lights_off(request):
     print(lights_manager.turn_all_lights_off())
     return redirect('/')
+
 
 def light_on(request, light_id):
     lights_manager.set_light_on_state(light_id, "true")
     return redirect('/')
 
+
 def light_warning(request, light_id):
     lights_manager.alarm_light(light_id, 0.2, 1.4, 5)
     return redirect('/')
+
 
 def light_of(request, light_id):
     lights_manager.set_light_on_state(light_id, "false")

@@ -1,9 +1,6 @@
 from typing import List
 
-from hue.lights.hue_lights_handler import HueLightsHandler
-from hue.lights.light import Light
 from hue.sensors.hue_sensors_manager import HueSensorsManager
-from hue.sensors.motion_sensor import MotionSensor
 from hue.sensors.switch import Switch
 
 
@@ -31,4 +28,3 @@ class SwitchesManager:
         if id in self.known_switches:
             return self.known_switches[id]
         return None
-

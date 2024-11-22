@@ -1,12 +1,11 @@
 import sqlite3
 
-from hue.hue_connector import HueConnector
 from hue.lights.hue_lights_handler import HueLightsHandler
 
 
 class Migration:
 
-    def __init__(self, lights_manager : HueLightsHandler):
+    def __init__(self, lights_manager: HueLightsHandler):
         self.lights_manager = lights_manager
 
     def migrate(self):
@@ -39,14 +38,12 @@ class Migration:
                 FOREIGN KEY(light_id) REFERENCES lights(id)
            )''')
 
-
         cur.execute('''
             CREATE TABLE IF NOT EXISTS switches(
                  id TEXT PRIMARY KEY,
                  name TEXT NOT NULL,
                  registration_date DATETIME DEFAULT CURRENT_TIMESTAMP
             )''')
-
 
         cur.execute('''
             CREATE TABLE IF NOT EXISTS switch_event(    
@@ -62,14 +59,12 @@ class Migration:
                  FOREIGN KEY(switch_id) REFERENCES switches(id)
             )''')
 
-
         cur.execute('''
             CREATE TABLE IF NOT EXISTS motion_sensors(
                  id TEXT PRIMARY KEY,
                  name TEXT NOT NULL,
                  registration_date DATETIME DEFAULT CURRENT_TIMESTAMP
             )''')
-
 
         cur.execute('''
             CREATE TABLE IF NOT EXISTS motion_sensor_events(  
@@ -80,4 +75,3 @@ class Migration:
                 data_onboarded_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(motion_sensor_id) REFERENCES motion_sensors(id)
             )''')
-

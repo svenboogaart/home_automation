@@ -2,8 +2,8 @@ import json
 from typing import List
 
 from helpers.constants import SensorTypes
-from hue.hue_manager_abc import HueManagerAbc
 from hue.hue_connector import HueConnector
+from hue.hue_manager_abc import HueManagerAbc
 from models.sensors.motion_sensor import MotionSensor
 from models.sensors.switch import Switch
 
@@ -46,8 +46,6 @@ class HueSensorsManager(HueManagerAbc):
         button_event = json_sensor["state"]["buttonevent"]
         last_updated = json_sensor["state"]["lastupdated"]
         return Switch(id, unique_id, name, SensorTypes.SWITCH, button_event, last_updated)
-
-
 
     def __create_motion_sensor_from_json(self, id, json_sensor) -> MotionSensor:
         name = json_sensor["name"]

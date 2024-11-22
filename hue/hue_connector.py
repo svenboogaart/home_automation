@@ -3,7 +3,6 @@ import json
 import requests as requests
 
 from hue.hue_connection_settings import HueConnectionSettings
-from settings.settings import Settings
 
 DISCOVER_PATH = "https://discovery.meethue.com/"
 
@@ -58,5 +57,3 @@ class HueConnector:
         else:
             print("Connecting to the bridge not possible.")
             return None
-
-
