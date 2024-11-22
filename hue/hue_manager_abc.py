@@ -1,3 +1,4 @@
+"""Module providing a base class for a hue manager."""
 from abc import ABC
 
 from hue.hue_connector import HueConnector

@@ -1,3 +1,5 @@
+"""Contains all the processing logic for home automation."""
+
 import time
 
 from twilio.rest import Client
