@@ -126,7 +126,7 @@ class Brain:
 
         for motion_sensor in self.motion_sensor_manager.get_sensors():
             if motion_sensor.motion_detected():
-                if self.settings.alarm_active:
+                if self.alarm_active:
                     print("Motion detected!")
                     if self.settings.alarm_play_sound:
                         self.audio_manager.play_alarm_sound()
