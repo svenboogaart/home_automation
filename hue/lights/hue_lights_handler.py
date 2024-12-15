@@ -7,18 +7,33 @@ from helpers.enums.device_state import DeviceState
 from helpers.enums.hue_colors import HueColor
 from hue.hue_connector import HueConnector
 from hue.hue_manager_abc import HueManagerAbc
+from hue.lights.hue_light import HueLight
+from interfaces.handlers.i_lights_handler import ILightsHandler
 from models.lights.LightState import LightState
-from models.lights.light import Light
 
 
-class HueLightsHandler(HueManagerAbc):
+class HueLightsHandler(HueManagerAbc, ILightsHandler):
 
     def __init__(self, hue_connector: HueConnector, data_layer: DataLayer):
         self.data_layer = data_layer
         super().__init__(hue_connector)
+        self.known_lights = {}
 
-    def get_lights(self) -> List[Light]:
-        lights = []
+    def update_lights(self):
+        for light in self.get_lights_from_manager():
+            self.update_light(light)
+
+    def update_light(self, light: HueLight):
+        if light.get_unique_id() in self.known_lights:
+            self.known_lights[light.get_unique_id()].add_state(light.light_state)
+        else:
+            self.known_lights[light.unique_id] = light
+
+    def get_lights(self) -> List[HueLight]:
+        return list(self.known_lights.values())
+
+    def get_lights_from_manager(self) -> List[HueLight]:
+        lights: List[HueLight] = []
         lights_data = self.hue_connector.run_get_request("lights")
         if lights_data:
             lights_from_json = json.loads(lights_data)
@@ -26,7 +41,7 @@ class HueLightsHandler(HueManagerAbc):
                 lights.append(self.create_light_object_from_json(key, value))
         return [light for light in lights if light is not None]
 
-    def get_light(self, light_id: int) -> Light | None:
+    def get_light(self, light_id: int) -> HueLight | None:
         light_data = self.hue_connector.run_get_request(f"lights/{light_id}")
         if light_data:
             light_from_json = json.loads(light_data)
@@ -43,7 +58,7 @@ class HueLightsHandler(HueManagerAbc):
         for light in self.get_lights():
             self.set_light_on_state(light.id, state)
 
-    def create_light_object_from_json(self, id, json_light) -> Light | None:
+    def create_light_object_from_json(self, id, json_light) -> HueLight | None:
         try:
             name = json_light["name"]
             min_dim_level = json_light["capabilities"]["control"]["mindimlevel"]
@@ -63,8 +78,9 @@ class HueLightsHandler(HueManagerAbc):
                     brightness = "0"
                     saturation = "0"
 
-            return Light(id, unique_id, name, min_dim_level, max_lumen, light_type, brightness, hue, saturation, state)
+            return HueLight(id, unique_id, name, min_dim_level, max_lumen, light_type, brightness, hue, saturation, state)
         except Exception as e:
+            print("Failed to create light object from json. ", e)
             # print(e)
             return None
 
@@ -77,6 +93,7 @@ class HueLightsHandler(HueManagerAbc):
         return self.hue_connector.run_put_request("lights/%s/state" % light_id, json.dumps(data))
 
     def alarm_light(self, light_id, time_flash, time_pause, number_of_flashes, hue=HueColor.RED):
+
         light = self.get_light(light_id)
         current_state = light.light_state
         on_state = LightState(100, hue, current_state.saturation, DeviceState.ON)

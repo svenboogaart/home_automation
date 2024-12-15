@@ -2,39 +2,29 @@ from threading import Thread
 from typing import List
 
 from helpers.enums.hue_colors import HueColor
-from hue.lights.hue_lights_handler import HueLightsHandler
-from models.lights.light import Light
+from interfaces.handlers.i_lights_handler import ILightsHandler
+from interfaces.lights.i_light import ILight
 
 
 class LightsManager:
-    known_lights = {}
-
-    def __init__(self, lights_handler: HueLightsHandler):
-        # TODO make interface for HueLightsHandler
+    def __init__(self, lights_handler: ILightsHandler):
         self._lights_handler = lights_handler
 
     def update_lights(self):
-        for light in self._lights_handler.get_lights():
-            self.update_light(light)
+        self._lights_handler.update_lights()
 
-    def get_lights(self) -> List[Light]:
-        return list(self.known_lights.values())
-
-    def update_light(self, light: Light):
-        if light.unique_id in self.known_lights:
-            self.known_lights[light.unique_id].add_state(light.light_state)
-        else:
-            self.known_lights[light.unique_id] = light
+    def get_lights(self) -> List[ILight]:
+        return self._lights_handler.get_lights()
 
     def alarm_lights(self, time_flash, time_pause, number_of_flashes):
+        # TODO Move to handler
         for light in self._lights_handler.get_lights():
-            self._lights_handler.alarm_light(light.id, time_flash, time_pause, number_of_flashes)
+            self.alarm_light(light.id, time_flash, time_pause, number_of_flashes)
 
     def alarm_light(self, light_id, time_flash, time_pause, number_of_flashes, color: HueColor = HueColor.RED):
+        # TODO Move to handler
         Thread(target=self._lights_handler.alarm_light,
                args=(light_id, time_flash, time_pause, number_of_flashes, color)).start()
 
     def get_light(self, id: int):
-        if id in self.known_lights:
-            return self.known_lights[id]
-        return None
+        self._lights_handler.get_light(id)

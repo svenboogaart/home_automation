@@ -26,15 +26,15 @@ class HueConnector:
             return None
 
     def run_get_request(self, path):
+        full_path = self.get_full_path(path)
         try:
-            full_path = self.get_full_path(path)
             request = requests.get(full_path, timeout=2.50)
             if request.status_code == 200:
                 return request.text
             else:
                 return None
         except Exception as exception:
-            print("exception in run_get_request")
+            print("exception in run_get_request , %s" % full_path)
             print(exception)
             return None
 

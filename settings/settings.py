@@ -28,16 +28,6 @@ class Settings:
         self.alarm_mp3_file = os.getenv(ALARM_MP3_PATH, None)
         self.alarm_play_sound = os.getenv(ALARM_PLAY_SOUND, None) == "True"
         self.should_log_data = os.getenv(LOG_DATA, None) == "True"
-        self.alarm_active = False
 
-    def set_alarm_active_state(self, state_to_set_alarm) -> bool:
-        if not state_to_set_alarm and self.alarm_active:
-            self.alarm_active = False
-            print("Turning alarm off")
-            return True
-        elif state_to_set_alarm and not self.alarm_active:
-            self.alarm_active = True
-            print("Turning alarm on")
-            return True
-        else:
-            return False
+
+

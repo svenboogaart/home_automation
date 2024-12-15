@@ -1,7 +1,7 @@
 from typing import List
 
 from hue.sensors.hue_sensors_manager import HueSensorsManager
-from models.sensors.motion_sensor import MotionSensor
+from interfaces.sensors.i_motion_sensor import IMotionSensor
 
 
 class MotionSensorManager:
@@ -14,14 +14,14 @@ class MotionSensorManager:
         for sensor in self._sensor_handler.get_motion_sensors():
             self.update_sensor(sensor)
 
-    def get_sensors(self) -> List[MotionSensor]:
+    def get_sensors(self) -> List[IMotionSensor]:
         return list(self.known_sensors.values())
 
-    def update_sensor(self, switch: MotionSensor):
-        if switch.unique_id in self.known_sensors:
-            self.known_sensors[switch.unique_id].add_state(switch.state)
+    def update_sensor(self, motion_sensor: IMotionSensor):
+        if motion_sensor.get_unique_id() in self.known_sensors:
+            self.known_sensors[motion_sensor.get_unique_id()].add_state(motion_sensor.get_state())
         else:
-            self.known_sensors[switch.unique_id] = switch
+            self.known_sensors[motion_sensor.get_unique_id()] = motion_sensor
 
     def get_sensor(self, id: int):
         if id in self.known_sensors:

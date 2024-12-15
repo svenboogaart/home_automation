@@ -28,6 +28,7 @@ class Brain:
         self.sms_manager = sms_manager
         self.settings = settings
         self.sms_send_after_alarm_activated = False
+        self.alarm_active = False
 
     def control_automation(self):
         self.start_brain()
@@ -78,11 +79,13 @@ class Brain:
         self.__process_light_events()
 
     def __process_light_events(self):
-        if self.settings.alarm_active:
+        if self.alarm_active:
             for light in self.lights_manager.get_lights():
                 if light.state_changed():
-                    print(light.unique_id, " Light changed to ", light.light_state.device_state, " was ",
-                          light.last_states[-2].device_state)
+                    try:
+                        print(light.get_unique_id(), " Light changed to ", light.get_light_state().device_state, " from ", light.get_previous_light_state().device_state)
+                    except:
+                        print("Something went wrong")
                     # if light.light_state.device_state == DeviceState.ON:
                     #     print("Intruder detected")
                     #     if self.settings.alarm_play_sound:
@@ -96,14 +99,17 @@ class Brain:
     def __process_switch_events(self):
         for switch in self.switches_manager.get_switches():
             if switch.state_changed():
-                if switch.state.release_hold and switch.state.button_pressed == 4:
-                    if self.settings.set_alarm_active_state(True):
+                if switch.is_release_long_click():
+                    if not self.alarm_active:
                         self.lights_manager.alarm_light(self.settings.hue_status_light, 0.5, 0.5, 2)
                         self.audio_manager.play_activated_sound()
-                elif switch.state.release_hold and switch.state.button_pressed == 1:
-                    if self.settings.set_alarm_active_state(False):
+                        print("Alarm activated")
+                        self.alarm_active = True
+                    else:
                         self.lights_manager.alarm_light(self.settings.hue_status_light, 0.5, 0.5, 2, HueColor.GREEN)
                         self.audio_manager.play_deactivate_sound()
+                        print("Alarm deactivated")
+                        self.alarm_active = False
 
     def __send_sms(self, content):
         client = Client(self.settings.twilio_account_ssd, self.settings.twilio_auth_token)

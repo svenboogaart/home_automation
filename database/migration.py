@@ -1,12 +1,10 @@
 import sqlite3
 
-from hue.lights.hue_lights_handler import HueLightsHandler
-
 
 class Migration:
 
-    def __init__(self, lights_manager: HueLightsHandler):
-        self.lights_manager = lights_manager
+    def __init__(self):
+        self.connection = None
 
     def migrate(self):
         self.connection = sqlite3.connect('database/databases/smart_home.db')  # file path
