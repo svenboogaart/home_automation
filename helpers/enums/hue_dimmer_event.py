@@ -52,3 +52,13 @@ class HueDimmerEvent(Enum):
             HueDimmerEvent.LONG_PRESS_OFF,
         }
         return self in hold_events
+
+    def is_off_event(self) -> bool:
+        """Check if the event represents an 'off button' even."""
+        off_events = {
+            HueDimmerEvent.HARD_PRESS_OFF,
+            HueDimmerEvent.LONG_PRESS_OFF,
+            HueDimmerEvent.RELEASE_OFF,
+            HueDimmerEvent.SOFT_PRESS_OFF,
+        }
+        return self in off_events

@@ -35,4 +35,6 @@ class ISwitch(metaclass=ABCMeta):
     def get_name(self):
         pass
 
-
+    @abstractmethod
+    def button_off_used(self) -> bool:
+        pass
