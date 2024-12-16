@@ -3,14 +3,15 @@ import sys
 from django.shortcuts import render, redirect
 
 from database.DataLayer import DataLayer
+from hue.hue_connector import HueConnector
 from hue.lights.hue_lights_handler import HueLightsHandler
 from hue.sensors.hue_sensors_manager import HueSensorsManager
+from settings.settings import Settings
 
 sys.path.append('/Users/Sven/Documents/programming/python/home_automation')
 
-from hue.hue_connector import HueConnector
-
-hue_connector = HueConnector()
+settings = Settings()
+hue_connector = HueConnector(settings)
 data_later = DataLayer()
 sensor_manager = HueSensorsManager(hue_connector)
 lights_manager = HueLightsHandler(hue_connector, data_later)

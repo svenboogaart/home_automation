@@ -14,4 +14,7 @@ class LightState:
             # don't attempt to compare against unrelated types
             return NotImplemented
 
-        return self.brightness == other.brightness and self.hue == other.hue and self.saturation == other.saturation and self.device_state == other.device_state
+        return (self.brightness == other.brightness and
+                self.hue == other.hue and
+                self.saturation == other.saturation and
+                self.device_state == other.device_state)

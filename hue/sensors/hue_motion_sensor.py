@@ -6,8 +6,8 @@ from models.sensors.sensor import Sensor
 
 class HueMotionSensor(Sensor, IMotionSensor):
 
-    def __init__(self, id, unique_id, name, sensor_type, presence: bool, last_update: str):
-        super().__init__(id, name, sensor_type)
+    def __init__(self, sensor_id, unique_id, name, sensor_type, presence: bool, last_update: str):
+        super().__init__(sensor_id, name, sensor_type)
         self.unique_id = unique_id
         self.state = MotionSensorState(presence, last_update)
         self.last_states: List[MotionSensorState] = [self.state]
@@ -36,7 +36,7 @@ class HueMotionSensor(Sensor, IMotionSensor):
     def get_name(self):
         return self.name
 
-    def get_state(self) -> MotionSensorState:
+    def get_state(self) -> MotionSensorState | None:
         try:
             return self.last_states[-1]
         except IndexError:

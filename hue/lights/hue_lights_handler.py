@@ -58,7 +58,7 @@ class HueLightsHandler(HueManagerAbc, ILightsHandler):
         for light in self.get_lights():
             self.set_light_on_state(light.id, state)
 
-    def create_light_object_from_json(self, id, json_light) -> HueLight | None:
+    def create_light_object_from_json(self, light_id, json_light) -> HueLight | None:
         try:
             name = json_light["name"]
             min_dim_level = json_light["capabilities"]["control"]["mindimlevel"]
@@ -78,7 +78,8 @@ class HueLightsHandler(HueManagerAbc, ILightsHandler):
                     brightness = "0"
                     saturation = "0"
 
-            return HueLight(id, unique_id, name, min_dim_level, max_lumen, light_type, brightness, hue, saturation, state)
+            return HueLight(light_id, unique_id, name, min_dim_level, max_lumen, light_type, brightness, hue,
+                            saturation, state)
         except Exception as e:
             print("Failed to create light object from json. ", e)
             # print(e)

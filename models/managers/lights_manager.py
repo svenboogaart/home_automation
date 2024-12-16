@@ -26,5 +26,5 @@ class LightsManager:
         Thread(target=self._lights_handler.alarm_light,
                args=(light_id, time_flash, time_pause, number_of_flashes, color)).start()
 
-    def get_light(self, id: int):
-        self._lights_handler.get_light(id)
+    def get_light(self, light_id: int):
+        self._lights_handler.get_light(light_id)

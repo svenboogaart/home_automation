@@ -22,5 +22,6 @@ class AudioManager:
         self.__play_audio_file(
             '/Users/Sven/Documents/programming/python/home_automation/resources/audio/deactivated.wav')
 
-    def __play_audio_file(self, filename: str):
+    @staticmethod
+    def __play_audio_file(filename: str):
         Thread(target=os.system, args=(f"afplay {filename}",)).start()

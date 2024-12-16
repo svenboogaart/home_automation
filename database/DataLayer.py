@@ -33,7 +33,8 @@ class DataLayer:
             print("Already got the lights in the database")
 
     def log_light_state(self, light: ILight):
-        insert_data = [(light.get_unique_id(), light.get_light_state().device_state.value, light.get_light_state().brightness,
+        insert_data = [(light.get_unique_id(), light.get_light_state().device_state.value,
+                        light.get_light_state().brightness,
                         light.get_light_state().hue, light.get_light_state().saturation)]
         self.cur.executemany(
             "INSERT INTO light_states (light_id, state, brightness, hue, saturation) VALUES(?, ?, ?, ?, ?)",
@@ -62,7 +63,8 @@ class DataLayer:
              123
              )]
         self.cur.executemany(
-            "INSERT INTO switch_event (switch_id, last_updated, button_pressed, hold, release, release_hold, button_event) VALUES(?, ?, ?, ?, ? ,?, ?)",
+            "INSERT INTO switch_event (switch_id, last_updated, button_pressed, hold, release, release_hold, "
+            "button_event) VALUES(?, ?, ?, ?, ? ,?, ?)",
             insert_data)
         self.connection.commit()
 

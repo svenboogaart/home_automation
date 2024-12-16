@@ -83,7 +83,8 @@ class Brain:
             for light in self.lights_manager.get_lights():
                 if light.state_changed():
                     try:
-                        print(light.get_unique_id(), " Light changed to ", light.get_light_state().device_state, " from ", light.get_previous_light_state().device_state)
+                        print(light.get_unique_id(), " Light changed to ", light.get_light_state().device_state,
+                              "from ", light.get_previous_light_state().device_state)
                     except:
                         print("Something went wrong")
                     # if light.light_state.device_state == DeviceState.ON:

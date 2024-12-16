@@ -7,6 +7,7 @@ class SmsManager:
 
     def __init__(self, settings: Settings):
         self.__settings = settings
+        self.sms_send_after_alarm_activated = False
 
     def send_sms(self, content):
         if self.__settings.twilio_account_ssd:

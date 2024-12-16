@@ -1,6 +1,5 @@
 from typing import List
 
-from hue.hue_connector import HueConnector
 from hue.sensors.hue_sensors_manager import HueSensorsManager
 from hue.sensors.hue_switch import HueSwitch
 from interfaces.handlers.i_switches_handler import ISwitchesHandler

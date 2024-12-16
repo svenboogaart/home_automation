@@ -32,7 +32,7 @@ class HueSensorsManager(HueManagerAbc):
         if sensor_data:
             sensors_from_json = json.loads(sensor_data)
             for key, json_sensor in sensors_from_json.items():
-                if (sensor_type):
+                if sensor_type:
                     sensor_type_enum_from_json = HueEventHelper.get_sensor_enum_from_string(json_sensor["type"])
                     if sensor_type == sensor_type_enum_from_json:
                         sensors_json[key] = json_sensor
@@ -41,16 +41,16 @@ class HueSensorsManager(HueManagerAbc):
 
         return sensors_json
 
-    def __create_switch_sensor_from_json(self, id, json_sensor) -> HueSwitch:
+    def __create_switch_sensor_from_json(self, motion_sensor_id, json_sensor) -> HueSwitch:
         name = json_sensor["name"]
         unique_id = json_sensor["uniqueid"]
         button_event = HueEventHelper.get_button_event_enum_from_code(json_sensor["state"]["buttonevent"])
         last_updated = json_sensor["state"]["lastupdated"]
-        return HueSwitch(id, unique_id, name, SensorType.SWITCH, button_event, last_updated)
+        return HueSwitch(motion_sensor_id, unique_id, name, SensorType.SWITCH, button_event, last_updated)
 
-    def __create_motion_sensor_from_json(self, id, json_sensor) -> HueMotionSensor:
+    def __create_motion_sensor_from_json(self, motion_sensor_id, json_sensor) -> HueMotionSensor:
         name = json_sensor["name"]
         unique_id = json_sensor["uniqueid"]
         presence = json_sensor["state"]["presence"]
         last_updated = json_sensor["state"]["lastupdated"]
-        return HueMotionSensor(id, unique_id, name, SensorType.MOTION, presence, last_updated)
+        return HueMotionSensor(motion_sensor_id, unique_id, name, SensorType.MOTION, presence, last_updated)

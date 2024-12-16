@@ -1,13 +1,13 @@
 from helpers.enums.device_state import DeviceState
-from models.lights.LightState import LightState
 from interfaces.lights.i_light import ILight
+from models.lights.LightState import LightState
 
 
 class HueLight(ILight):
 
-    def __init__(self, id, unique_id, name, min_dim_level, max_lumen, light_type, brightness, hue, saturation,
+    def __init__(self, light_id, unique_id, name, min_dim_level, max_lumen, light_type, brightness, hue, saturation,
                  device_state: DeviceState = DeviceState.UNKNOWN, ):
-        self.id = id
+        self.id = light_id
         self.unique_id = unique_id
         self.name = name
         self.min_dim_level = min_dim_level
@@ -24,7 +24,7 @@ class HueLight(ILight):
         if len(self.last_states) < 2:
             return True
         try:
-            last_state =  self.last_states[-1]
+            last_state = self.last_states[-1]
             previous_state = self.get_previous_light_state()
             return last_state.device_state != previous_state.device_state
         except IndexError:
@@ -39,13 +39,13 @@ class HueLight(ILight):
     def get_type(self) -> str:
         return self.light_type
 
-    def get_light_state(self) ->LightState:
+    def get_light_state(self) -> LightState | None:
         try:
             return self.last_states[-1]
         except IndexError:
             return None
 
-    def get_previous_light_state(self) -> LightState:
+    def get_previous_light_state(self) -> LightState | None:
         try:
             return self.last_states[-2]
         except IndexError:

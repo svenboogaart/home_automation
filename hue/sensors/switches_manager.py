@@ -4,7 +4,7 @@ from hue.sensors.hue_sensors_manager import HueSensorsManager
 from hue.sensors.hue_switch import HueSwitch
 
 
-class SwitchesManager():
+class SwitchesManager:
     known_switches = {}
 
     def __init__(self, sensor_manager: HueSensorsManager):
@@ -23,7 +23,7 @@ class SwitchesManager():
         else:
             self.known_switches[switch.unique_id] = switch
 
-    def get_switch(self, id: int):
-        if id in self.known_switches:
-            return self.known_switches[id]
+    def get_switch(self, switch_id: int):
+        if switch_id in self.known_switches:
+            return self.known_switches[switch_id]
         return None

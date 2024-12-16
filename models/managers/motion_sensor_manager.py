@@ -23,7 +23,7 @@ class MotionSensorManager:
         else:
             self.known_sensors[motion_sensor.get_unique_id()] = motion_sensor
 
-    def get_sensor(self, id: int):
-        if id in self.known_sensors:
-            return self.known_sensors[id]
+    def get_sensor(self, sensor_id: int):
+        if sensor_id in self.known_sensors:
+            return self.known_sensors[sensor_id]
         return None

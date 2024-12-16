@@ -3,7 +3,6 @@ from abc import ABCMeta, abstractmethod
 
 class ISwitch(metaclass=ABCMeta):
 
-
     @abstractmethod
     def state_changed(self):
         pass

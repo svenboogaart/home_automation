@@ -21,8 +21,8 @@ class SwitchState:
 
 class HueSwitch(Sensor, ISwitch):
 
-    def __init__(self, id, unique_id, name, sensor_type, button_event, last_updated):
-        super().__init__(id, name, sensor_type)
+    def __init__(self, sensor_id, unique_id, name, sensor_type, button_event, last_updated):
+        super().__init__(sensor_id, name, sensor_type)
         self.unique_id = unique_id
         self.switch_state = SwitchState(button_event, last_updated)
         self.last_states: List[SwitchState] = [self.switch_state]

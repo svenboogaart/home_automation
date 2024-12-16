@@ -47,13 +47,13 @@ class HueConnector:
         :return:
         """
         connection_data = self.run_get_request(DISCOVER_PATH)
-        if (connection_data):
+        if connection_data:
             loaded_data = json.loads(connection_data)
-            id = loaded_data[0]["id"]
+            connection_id = loaded_data[0]["id"]
             internalipaddress = loaded_data[0]["internalipaddress"]
             port = loaded_data[0]["port"]
             print("Can connect")
-            return HueConnectionSettings(id, internalipaddress, port)
+            return HueConnectionSettings(connection_id, internalipaddress, port)
         else:
             print("Connecting to the bridge not possible.")
             return None
