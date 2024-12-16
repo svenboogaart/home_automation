@@ -10,7 +10,7 @@ class HueMotionSensor(Sensor, IMotionSensor):
         super().__init__(id, name, sensor_type)
         self.unique_id = unique_id
         self.state = MotionSensorState(presence, last_update)
-        self.last_states: List[MotionSensorState] = []
+        self.last_states: List[MotionSensorState] = [self.state]
 
     def add_state(self, state: MotionSensorState):
         self.last_states.append(state)

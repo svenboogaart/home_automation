@@ -25,7 +25,7 @@ class HueSwitch(Sensor, ISwitch):
         super().__init__(id, name, sensor_type)
         self.unique_id = unique_id
         self.switch_state = SwitchState(button_event, last_updated)
-        self.last_states: List[SwitchState] = []
+        self.last_states: List[SwitchState] = [self.switch_state]
 
     def add_state(self, state: SwitchState):
         self.last_states.append(state)
