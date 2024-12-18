@@ -1,3 +1,4 @@
+import os
 import sqlite3
 
 
@@ -7,7 +8,11 @@ class Migration:
         self.connection = None
 
     def migrate(self):
-        self.connection = sqlite3.connect('database/databases/smart_home.db')  # file path
+        path = 'databases/smart_home.db'
+        scriptdir = os.path.dirname(__file__)
+        # add the relative path to the database file from there
+        db_path = os.path.join(scriptdir, path)
+        self.connection = sqlite3.connect(db_path)  # file path
         # create a cursor object from the cursor class
         cur = self.connection.cursor()
         self.create_tables_if_not_exist(cur)
