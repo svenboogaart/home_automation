@@ -2,8 +2,6 @@
 
 import time
 
-from twilio.rest import Client
-
 from helpers.enums.hue_colors import HueColor
 from models.managers.audio_manager import AudioManager
 from models.managers.lights_manager import LightsManager
