@@ -1,3 +1,4 @@
+import os
 import sqlite3
 from typing import List
 
@@ -13,10 +14,12 @@ class Base(DeclarativeBase):
 
 
 class DataLayer:
-
     def __init__(self):
-        self.connection = sqlite3.connect(
-            '/Users/Sven/Documents/programming/python/home_automation/database/databases/smart_home.db')  # file path
+        path = 'databases/smart_home.db'
+        scriptdir = os.path.dirname(__file__)
+        # add the relative path to the database file from there
+        db_path = os.path.join(scriptdir, path)
+        self.connection = sqlite3.connect(db_path)  # file path
 
         # create a cursor object from the cursor class
         self.cur = self.connection.cursor()
