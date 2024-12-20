@@ -103,19 +103,20 @@ class Brain:
     def __process_switch_events(self):
         for switch in self.__switches_manager.get_switches():
             if switch.state_changed():
-                if switch.is_release_long_click():
-                    if not self.__alarm_active:
-                        self.__lights_manager.alarm_light(self.__settings.hue_status_light, 0.5, 0.5, 2)
-                        self.__audio_manager.play_activated_sound()
-                        print("Alarm activated")
-                        self.__alarm_active = True
-                        self.__alarm_activated_timestamp = int(datetime.timestamp(datetime.now()))
-                    else:
+                if switch.is_release_long_click() and switch.button_off_used():
+                    if self.__alarm_active:
                         self.__lights_manager.alarm_light(self.__settings.hue_status_light, 0.5, 0.5, 2, HueColor.GREEN)
                         self.__audio_manager.play_deactivate_sound()
                         print("Alarm deactivated")
                         self.__alarm_active = False
                         self.__alarm_activated_timestamp = 0
+                elif switch.is_release_long_click() and switch.button_on_used():
+                    if not self.__alarm_active:
+                        self.__lights_manager.alarm_light(self.__settings.hue_status_light, 0.5, 0.5, 4)
+                        self.__audio_manager.play_activated_sound()
+                        print("Alarm activated")
+                        self.__alarm_active = True
+                        self.__alarm_activated_timestamp = int(datetime.timestamp(datetime.now()))
 
 
     def __get_seconds_after_alarm_activate(self)->int:

@@ -37,3 +37,7 @@ class ISwitch(metaclass=ABCMeta):
     @abstractmethod
     def button_off_used(self) -> bool:
         pass
+
+    @abstractmethod
+    def button_on_used(self) -> bool:
+        pass

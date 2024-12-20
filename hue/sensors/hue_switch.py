@@ -75,6 +75,12 @@ class HueSwitch(Sensor, ISwitch):
 
     def button_off_used(self) -> bool:
         try:
-            return self.last_states[-1].button_event.is_hold_event()
+            return self.last_states[-1].button_event.is_off_event()
+        except IndexError:
+            return False
+
+    def button_on_used(self) -> bool:
+        try:
+            return self.last_states[-1].button_event.is_on_event()
         except IndexError:
             return False
