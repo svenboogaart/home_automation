@@ -1,7 +1,9 @@
 from abc import ABCMeta, abstractmethod
 
+from interfaces.i_device import IDevice
 
-class ISwitch(metaclass=ABCMeta):
+
+class ISwitch(IDevice, metaclass=ABCMeta):
 
     @abstractmethod
     def state_changed(self):
@@ -24,14 +26,7 @@ class ISwitch(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_unique_id(self):
-        pass
-
-    @abstractmethod
     def get_last_update_date(self):
-        pass
-
-    def get_name(self):
         pass
 
     @abstractmethod

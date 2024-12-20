@@ -1,5 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
+from interfaces.i_device import IDevice
+
 
 class MotionSensorState:
 
@@ -14,7 +16,8 @@ class MotionSensorState:
         return self.presence == other.presence and self.last_updated == other.last_updated
 
 
-class IMotionSensor(metaclass=ABCMeta):
+class IMotionSensor(IDevice, metaclass=ABCMeta):
+
     @abstractmethod
     def state_changed(self):
         pass
@@ -24,15 +27,7 @@ class IMotionSensor(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_unique_id(self):
-        pass
-
-    @abstractmethod
     def get_last_update_date(self):
-        pass
-
-    @abstractmethod
-    def get_name(self):
         pass
 
     @abstractmethod

@@ -1,8 +1,10 @@
 from abc import ABCMeta, abstractmethod
+
+from interfaces.i_device import IDevice
 from models.lights.LightState import LightState
 
 
-class ILight(metaclass=ABCMeta):
+class ILight(IDevice, metaclass=ABCMeta):
 
     @abstractmethod
     def add_state(self, state: LightState):
@@ -10,14 +12,6 @@ class ILight(metaclass=ABCMeta):
 
     @abstractmethod
     def state_changed(self):
-        pass
-
-    @abstractmethod
-    def get_unique_id(self) -> str:
-        pass
-
-    @abstractmethod
-    def get_name(self) -> str:
         pass
 
     @abstractmethod
