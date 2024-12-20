@@ -84,11 +84,12 @@ class Brain:
         if self.__alarm_active:
             for light in self.__lights_manager.get_lights():
                 if light.state_changed():
-                    try:
-                        print(light.get_unique_id(), " Light changed to ", light.get_light_state().device_state,
-                              "from ", light.get_previous_light_state().device_state)
-                    except:
-                        print("Something went wrong")
+                    pass
+                    # try:
+                    #     # print(light.get_unique_id(), " Light changed to ", light.get_light_state().device_state,
+                    #     #       "from ", light.get_previous_light_state().device_state)
+                    # except:
+                    #     print("Something went wrong")
                     # if light.light_state.device_state == DeviceState.ON:
                     #     print("Intruder detected")
                     #     if self.settings.alarm_play_sound:
