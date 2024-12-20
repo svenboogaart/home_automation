@@ -1,6 +1,7 @@
 """Contains all the processing logic for home automation."""
 
 import time
+from datetime import datetime
 
 from helpers.enums.hue_colors import HueColor
 from models.managers.audio_manager import AudioManager
@@ -29,6 +30,7 @@ class Brain:
         self.__settings = settings
         self.__sms_send_after_alarm_activated = False
         self.__alarm_active = False
+        self.__alarm_activated_timestamp = 0
 
     def control_automation(self):
         self.start_brain()
@@ -106,26 +108,34 @@ class Brain:
                         self.__audio_manager.play_activated_sound()
                         print("Alarm activated")
                         self.__alarm_active = True
+                        self.__alarm_activated_timestamp = int(datetime.timestamp(datetime.now()))
                     else:
                         self.__lights_manager.alarm_light(self.__settings.hue_status_light, 0.5, 0.5, 2, HueColor.GREEN)
                         self.__audio_manager.play_deactivate_sound()
                         print("Alarm deactivated")
                         self.__alarm_active = False
+                        self.__alarm_activated_timestamp = 0
 
 
+    def __get_seconds_after_alarm_activate(self)->int:
+        return int(datetime.timestamp(datetime.now())) - self.__alarm_activated_timestamp
 
     def __process_motion_events(self):
         for motion_sensor in self.__motion_sensor_manager.get_sensors():
-            if motion_sensor.motion_detected():
+            if motion_sensor.new_motion_detected():
                 if self.__alarm_active:
-                    print("Motion detected!")
-                    if self.__settings.alarm_play_sound:
-                        self.__audio_manager.play_alarm_sound()
-                    if self.__settings.send_mail:
-                        self.__mail_manager.send_mail("Intruder detected", self.__settings.mail_to)
-                    if not self.__sms_send_after_alarm_activated:
-                        self.__sms_manager.send_sms("Intruder alarm")
-                    if self.__settings.hue_status_light:
-                        self.__lights_manager.alarm_light(self.__settings.hue_status_light, 1.0, 2.0, 2)
+                    if self.__get_seconds_after_alarm_activate() > 10:
+                        print("Motion detected!")
+                        if self.__settings.alarm_play_sound:
+                            self.__audio_manager.play_alarm_sound()
+                            self.__audio_manager.say_something("Intruder detected, calling the police")
+                        if self.__settings.send_mail:
+                            self.__mail_manager.send_mail("Intruder detected", self.__settings.mail_to)
+                        if not self.__sms_send_after_alarm_activated:
+                            self.__sms_manager.send_sms("Intruder alarm")
+                        if self.__settings.hue_status_light:
+                            self.__lights_manager.alarm_light(self.__settings.hue_status_light, 1.0, 2.0, 2)
+                    else:
+                        print("Alarm is activating, ignoring the first seconds")
                 else:
                     print("Motion detected, but alarm is not active.")

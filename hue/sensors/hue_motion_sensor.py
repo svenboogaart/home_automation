@@ -27,6 +27,13 @@ class HueMotionSensor(Sensor, IMotionSensor):
     def motion_detected(self):
         return len(self.last_states) > 0 and self.last_states[-1] is not None and self.last_states[-1].presence
 
+    def new_motion_detected(self):
+        return (len(self.last_states) > 1 and
+                self.last_states[-1] is not None and
+                self.last_states[-2] is not None and
+                self.last_states[-1].presence and
+                not self.last_states[-2].presence)
+
     def get_unique_id(self):
         return self.unique_id
 

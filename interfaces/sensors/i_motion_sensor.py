@@ -42,3 +42,7 @@ class IMotionSensor(metaclass=ABCMeta):
     @abstractmethod
     def get_state(self) -> MotionSensorState:
         pass
+
+    @abstractmethod
+    def new_motion_detected(self):
+        pass
