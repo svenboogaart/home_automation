@@ -1,4 +1,5 @@
 import json
+import threading
 import time
 from typing import List
 
@@ -94,15 +95,19 @@ class HueLightsHandler(HueManagerAbc, ILightsHandler):
         return self.hue_connector.run_put_request("lights/%s/state" % light_id, json.dumps(data))
 
     def alarm_light(self, light_id, time_flash, time_pause, number_of_flashes, hue=HueColor.RED):
+        def flash_light():
+            light = self.get_light(light_id)
+            current_state = light.light_state
+            on_state = LightState(100, hue, current_state.saturation, DeviceState.ON)
+            off_state = LightState(current_state.brightness, hue, current_state.saturation, DeviceState.OFF)
 
-        light = self.get_light(light_id)
-        current_state = light.light_state
-        on_state = LightState(100, hue, current_state.saturation, DeviceState.ON)
-        off_state = LightState(current_state.brightness, hue, current_state.saturation, DeviceState.OFF)
-        for x in range(number_of_flashes):
-            print(self.set_light_state(light.id, on_state))
-            time.sleep(time_flash)
-            self.set_light_state(light.id, off_state)
-            time.sleep(time_pause)
+            for x in range(number_of_flashes):
+                self.set_light_state(light.id, on_state)
+                time.sleep(time_flash)
+                self.set_light_state(light.id, off_state)
+                time.sleep(time_pause)
 
-        self.set_light_state(light.id, current_state)
+            self.set_light_state(light.id, current_state)
+
+        # Start the flash_light function in a separate thread
+        threading.Thread(target=flash_light).start()
