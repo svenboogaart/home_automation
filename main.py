@@ -8,6 +8,7 @@ from hue.sensors.hue_switches_handler import HueSwitchesHandler
 
 from models.managers.audio_manager import AudioManager
 from models.managers.lights_manager import LightsManager
+from models.managers.mail_manager import MailManager
 from models.managers.motion_sensor_manager import MotionSensorManager
 from models.managers.sms_manager import SmsManager
 from models.managers.switches_manager import SwitchesManager
@@ -23,13 +24,14 @@ if __name__ == '__main__':
     hue_switches_handler = HueSwitchesHandler(sensor_manager)
     audio_manager = AudioManager(settings)
     sms_manager = SmsManager(settings)
+    mail_manager = MailManager(settings)
 
     lights_manager = LightsManager(hue_lights_handler)
     switches_manager = SwitchesManager(hue_switches_handler)
     motion_sensor_manager = MotionSensorManager(sensor_manager)
 
     brain = Brain(database_layer, lights_manager, switches_manager, motion_sensor_manager, audio_manager, sms_manager,
-                  settings)
+                  mail_manager, settings)
 
     migration = Migration()
     migration.migrate()

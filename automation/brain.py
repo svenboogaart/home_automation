@@ -5,28 +5,30 @@ import time
 from helpers.enums.hue_colors import HueColor
 from models.managers.audio_manager import AudioManager
 from models.managers.lights_manager import LightsManager
+from models.managers.mail_manager import MailManager
 from models.managers.motion_sensor_manager import MotionSensorManager
 from models.managers.sms_manager import SmsManager
 from models.managers.switches_manager import SwitchesManager
 from settings.settings import Settings
 
-TICK_TIME_SECONDS = 5
+TICK_TIME_SECONDS = 2
 
 
 class Brain:
 
     def __init__(self, database_layer, lights_manager: LightsManager, switches_manager: SwitchesManager,
                  motion_sensor_manager: MotionSensorManager, audio_manager: AudioManager, sms_manager: SmsManager,
-                 settings: Settings):
-        self.database_layer = database_layer
-        self.lights_manager = lights_manager
-        self.switches_manager = switches_manager
-        self.motion_sensor_manager = motion_sensor_manager
-        self.audio_manager = audio_manager
-        self.sms_manager = sms_manager
-        self.settings = settings
-        self.sms_send_after_alarm_activated = False
-        self.alarm_active = False
+                 mail_manager: MailManager, settings: Settings):
+        self.__database_layer = database_layer
+        self.__lights_manager = lights_manager
+        self.__switches_manager = switches_manager
+        self.__motion_sensor_manager = motion_sensor_manager
+        self.__audio_manager = audio_manager
+        self.__mail_manager = mail_manager
+        self.__sms_manager = sms_manager
+        self.__settings = settings
+        self.__sms_send_after_alarm_activated = False
+        self.__alarm_active = False
 
     def control_automation(self):
         self.start_brain()
@@ -48,28 +50,28 @@ class Brain:
         self.__event_based_processing()
 
     def __update_device_states(self):
-        self.lights_manager.update_lights()
-        self.switches_manager.update_switches()
-        self.motion_sensor_manager.update_sensors()
+        self.__lights_manager.update_lights()
+        self.__switches_manager.update_switches()
+        self.__motion_sensor_manager.update_sensors()
 
     def __log_data(self):
-        if self.settings.should_log_data:
-            self.database_layer.store_lights(self.lights_manager.get_lights())
-            self.database_layer.store_switches(self.switches_manager.get_switches())
+        if self.__settings.should_log_data:
+            self.__database_layer.store_lights(self.__lights_manager.get_lights())
+            self.__database_layer.store_switches(self.__switches_manager.get_switches())
 
-            for switch in self.switches_manager.get_switches():
+            for switch in self.__switches_manager.get_switches():
                 if switch.state_changed():
-                    self.database_layer.log_switch_event(switch)
+                    self.__database_layer.log_switch_event(switch)
 
-            for light in self.lights_manager.get_lights():
+            for light in self.__lights_manager.get_lights():
                 if light.state_changed():
-                    self.database_layer.log_light_state(light)
+                    self.__database_layer.log_light_state(light)
 
-            self.database_layer.log_motion_sensors(self.motion_sensor_manager.get_sensors())
+            self.__database_layer.log_motion_sensors(self.__motion_sensor_manager.get_sensors())
 
-            for motion_sensor in self.motion_sensor_manager.get_sensors():
+            for motion_sensor in self.__motion_sensor_manager.get_sensors():
                 if motion_sensor.state_changed():
-                    self.database_layer.log_motion_sensor_event(motion_sensor)
+                    self.__database_layer.log_motion_sensor_event(motion_sensor)
 
     def __event_based_processing(self):
         self.__process_switch_events()
@@ -77,8 +79,8 @@ class Brain:
         self.__process_light_events()
 
     def __process_light_events(self):
-        if self.alarm_active:
-            for light in self.lights_manager.get_lights():
+        if self.__alarm_active:
+            for light in self.__lights_manager.get_lights():
                 if light.state_changed():
                     try:
                         print(light.get_unique_id(), " Light changed to ", light.get_light_state().device_state,
@@ -96,42 +98,34 @@ class Brain:
                     #         self.lights_manager.alarm_light(self.settings.hue_status_light, 0.2, 0.2, 3)
 
     def __process_switch_events(self):
-        for switch in self.switches_manager.get_switches():
+        for switch in self.__switches_manager.get_switches():
             if switch.state_changed():
                 if switch.is_release_long_click():
-                    if not self.alarm_active:
-                        self.lights_manager.alarm_light(self.settings.hue_status_light, 0.5, 0.5, 2)
-                        self.audio_manager.play_activated_sound()
+                    if not self.__alarm_active:
+                        self.__lights_manager.alarm_light(self.__settings.hue_status_light, 0.5, 0.5, 2)
+                        self.__audio_manager.play_activated_sound()
                         print("Alarm activated")
-                        self.alarm_active = True
+                        self.__alarm_active = True
                     else:
-                        self.lights_manager.alarm_light(self.settings.hue_status_light, 0.5, 0.5, 2, HueColor.GREEN)
-                        self.audio_manager.play_deactivate_sound()
+                        self.__lights_manager.alarm_light(self.__settings.hue_status_light, 0.5, 0.5, 2, HueColor.GREEN)
+                        self.__audio_manager.play_deactivate_sound()
                         print("Alarm deactivated")
-                        self.alarm_active = False
+                        self.__alarm_active = False
 
-    def __send_sms(self, content):
-        client = Client(self.settings.twilio_account_ssd, self.settings.twilio_auth_token)
 
-        message = client.messages.create(
-            from_="svenhome",
-            body=content,
-            to=self.settings.sms_receiver_number
-        )
-        self.sms_send_after_alarm_activated = True
-        print(f"Sms has been send: {message.sid}")
 
     def __process_motion_events(self):
-
-        for motion_sensor in self.motion_sensor_manager.get_sensors():
+        for motion_sensor in self.__motion_sensor_manager.get_sensors():
             if motion_sensor.motion_detected():
-                if self.alarm_active:
+                if self.__alarm_active:
                     print("Motion detected!")
-                    if self.settings.alarm_play_sound:
-                        self.audio_manager.play_alarm_sound()
-                    if not self.sms_send_after_alarm_activated:
-                        self.sms_manager.send_sms("Intruder alarm")
-                    if self.settings.hue_status_light:
-                        self.lights_manager.alarm_light(self.settings.hue_status_light, 1.0, 2.0, 2)
+                    if self.__settings.alarm_play_sound:
+                        self.__audio_manager.play_alarm_sound()
+                    if self.__settings.send_mail:
+                        self.__mail_manager.send_mail("Intruder detected", self.__settings.mail_to)
+                    if not self.__sms_send_after_alarm_activated:
+                        self.__sms_manager.send_sms("Intruder alarm")
+                    if self.__settings.hue_status_light:
+                        self.__lights_manager.alarm_light(self.__settings.hue_status_light, 1.0, 2.0, 2)
                 else:
                     print("Motion detected, but alarm is not active.")

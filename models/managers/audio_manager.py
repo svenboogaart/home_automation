@@ -1,6 +1,6 @@
 import os
 from threading import Thread
-
+from playsound import playsound
 from settings.settings import Settings
 
 
@@ -12,16 +12,20 @@ class AudioManager:
     def play_alarm_sound(self):
         if self.__settings.alarm_play_sound:
             Thread(target=os.system, args=('say "Intruder detected, calling police."',)).start()
-            if self.__settings.alarm_mp3_file:
-                self.__play_audio_file(self.__settings.alarm_mp3_file)
+            self.__play_audio_file(self.__settings.mp3_file_alarm)
 
     def play_activated_sound(self):
-        self.__play_audio_file('/Users/Sven/Documents/programming/python/home_automation/resources/audio/activated.wav')
+        self.__play_audio_file(self.__settings.mp3_path_activated)
 
     def play_deactivate_sound(self):
-        self.__play_audio_file(
-            '/Users/Sven/Documents/programming/python/home_automation/resources/audio/deactivated.wav')
+        self.__play_audio_file(self.__settings.mp3_path_deactivated)
 
     @staticmethod
-    def __play_audio_file(filename: str):
-        Thread(target=os.system, args=(f"afplay {filename}",)).start()
+    def __play_audio_file(file_path: str):
+        try:
+            if os.path.isfile(file_path):
+                playsound(file_path)
+            else:
+                print("Failed to play audo, %s file not found " % file_path)
+        except Exception as e:
+            print("Failed to send message : %s" % e)
