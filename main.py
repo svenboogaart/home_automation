@@ -1,5 +1,5 @@
 from automation.brain import Brain
-from database.DataLayer import DataLayer
+from database.data_layer import DataLayer
 from database.migration import Migration
 from hue.hue_connector import HueConnector
 from hue.lights.hue_lights_handler import HueLightsHandler

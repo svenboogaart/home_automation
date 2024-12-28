@@ -24,5 +24,3 @@ class HueSwitchesHandler(ISwitchesHandler):
             self.known_switches[switch.get_unique_id()].add_state(switch.switch_state)
         else:
             self.known_switches[switch.get_unique_id()] = switch
-
-

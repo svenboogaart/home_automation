@@ -1,4 +1,5 @@
 import json
+import time
 from typing import List
 
 from helpers.enums.sensor_types import SensorType
@@ -9,6 +10,7 @@ from hue.sensors.hue_motion_sensor import HueMotionSensor
 from hue.sensors.hue_switch import HueSwitch
 
 
+# pylint: disable=W0246
 class HueSensorsManager(HueManagerAbc):
 
     def __init__(self, hue_connector: HueConnector):
@@ -26,14 +28,15 @@ class HueSensorsManager(HueManagerAbc):
             motion_sensors.append(self.__create_motion_sensor_from_json(index, switch_data))
         return motion_sensors
 
-    def get_sensor_json(self, sensor_type=None):
+    def get_sensor_json(self, sensor_type: SensorType = None):
         sensors_json = {}
         sensor_data = self.hue_connector.run_get_request("sensors")
         if sensor_data:
             sensors_from_json = json.loads(sensor_data)
             for key, json_sensor in sensors_from_json.items():
                 if sensor_type:
-                    sensor_type_enum_from_json = HueEventHelper.get_sensor_enum_from_string(json_sensor["type"])
+                    json_sensor_type = json_sensor["type"]
+                    sensor_type_enum_from_json = HueEventHelper.get_sensor_enum_from_string(json_sensor_type)
                     if sensor_type == sensor_type_enum_from_json:
                         sensors_json[key] = json_sensor
                 else:
@@ -46,11 +49,24 @@ class HueSensorsManager(HueManagerAbc):
         unique_id = json_sensor["uniqueid"]
         button_event = HueEventHelper.get_button_event_enum_from_code(json_sensor["state"]["buttonevent"])
         last_updated = json_sensor["state"]["lastupdated"]
-        return HueSwitch(motion_sensor_id, unique_id, name, SensorType.SWITCH, button_event, last_updated)
+        return HueSwitch(motion_sensor_id, unique_id, name, SensorType.SWITCH, button_event,
+                         self.__get_timestamp_from_string(last_updated))
 
     def __create_motion_sensor_from_json(self, motion_sensor_id, json_sensor) -> HueMotionSensor:
         name = json_sensor["name"]
         unique_id = json_sensor["uniqueid"]
         presence = json_sensor["state"]["presence"]
         last_updated = json_sensor["state"]["lastupdated"]
-        return HueMotionSensor(motion_sensor_id, unique_id, name, SensorType.MOTION, presence, last_updated)
+
+        return HueMotionSensor(motion_sensor_id, unique_id, name, SensorType.MOTION, presence,
+                               self.__get_timestamp_from_string(last_updated))
+
+    @staticmethod
+    def __get_timestamp_from_string(time_string: str, time_format: str = '%Y-%m-%dT%H:%M:%S'):
+        try:
+            time_object = time.strptime(time_string, time_format)
+            return time.mktime(time_object)
+        except Exception as e:
+            print(f"Failed to convert string {time_string} to a valid timestamp {e}")
+
+        return 0

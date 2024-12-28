@@ -1,4 +1,9 @@
-class Sensor:
+from abc import ABC
+
+
+# pylint: disable=R0903
+
+class SensorABC(ABC):
 
     def __init__(self, sensor_id, name, sensor_type):
         self.id = sensor_id

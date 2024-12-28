@@ -7,7 +7,7 @@ class SmsManager:
 
     def __init__(self, settings: Settings):
         self.__settings = settings
-        self.sms_send_after_alarm_activated = False
+        self._sms_send_after_alarm_activated = False
 
     def send_sms(self, content):
         if self.__settings.twilio_account_ssd:
@@ -20,4 +20,7 @@ class SmsManager:
             # )
             # self.sms_send_after_alarm_activated = True
             # print(f"Sms has been send: {message.sid}")
-            print("TODO implement sending sms")
+            print(f"TODO implement sending sms {content}")
+
+    def get_sms_was_send(self):
+        return self._sms_send_after_alarm_activated

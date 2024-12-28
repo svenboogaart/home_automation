@@ -13,4 +13,3 @@ class ISwitchesHandler(metaclass=ABCMeta):
     @abstractmethod
     def get_switches(self) -> List[ISwitch]:
         pass
-

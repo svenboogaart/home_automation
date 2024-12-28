@@ -13,4 +13,3 @@ class IMotionSensorHandler(metaclass=ABCMeta):
     @abstractmethod
     def get_motion_sensor(self) -> List[ISwitch]:
         pass
-

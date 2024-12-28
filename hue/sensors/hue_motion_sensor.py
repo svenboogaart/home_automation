@@ -1,12 +1,14 @@
 from typing import List
 
 from interfaces.sensors.i_motion_sensor import IMotionSensor, MotionSensorState
-from models.sensors.sensor import Sensor
+from models.sensors.sensor_abc import SensorABC
 
 
-class HueMotionSensor(Sensor, IMotionSensor):
+# pylint: disable=R0801
 
-    def __init__(self, sensor_id, unique_id, name, sensor_type, presence: bool, last_update: str):
+class HueMotionSensor(SensorABC, IMotionSensor):
+
+    def __init__(self, sensor_id, unique_id, name, sensor_type, presence: bool, last_update: float):
         super().__init__(sensor_id, name, sensor_type)
         self.unique_id = unique_id
         self.state = MotionSensorState(presence, last_update)
@@ -28,17 +30,24 @@ class HueMotionSensor(Sensor, IMotionSensor):
         return len(self.last_states) > 0 and self.last_states[-1] is not None and self.last_states[-1].presence
 
     def new_motion_detected(self):
-        return (len(self.last_states) > 1 and
-                self.last_states[-1] is not None and
-                self.last_states[-2] is not None and
-                self.last_states[-1].presence and
-                not self.last_states[-2].presence)
+        if len(self.last_states) <= 1:
+            return False
+
+        current_state = self.last_states[-1]
+        previous_state = self.last_states[-2]
+
+        if current_state is None or previous_state is None:
+            return False
+
+        return current_state.presence and not previous_state.presence
 
     def get_unique_id(self):
         return self.unique_id
 
-    def get_last_update_date(self):
-        return len(self.last_states) > 0 and self.last_states[-1] is not None and self.last_states[-1].last_updated
+    def get_last_update_date(self) -> float:
+        if len(self.last_states) == 0:
+            return 0
+        return self.last_states[-1].last_updated
 
     def get_name(self):
         return self.name

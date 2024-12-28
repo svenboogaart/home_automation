@@ -41,7 +41,7 @@ class Brain:
             self.update()
 
     def start_brain(self):
-        print("Preparing brain")
+        print(f"Preparing brain, Alarm state: {self.__alarm_active}")
         # self.database_layer.store_lights(self.lights_manager.get_lights())
         # self.database_layer.store_switches(self.switches_manager.get_switches())
 
@@ -118,8 +118,7 @@ class Brain:
                         self.__alarm_active = True
                         self.__alarm_activated_timestamp = int(datetime.timestamp(datetime.now()))
 
-
-    def __get_seconds_after_alarm_activate(self)->int:
+    def __get_seconds_after_alarm_activate(self) -> int:
         return int(datetime.timestamp(datetime.now())) - self.__alarm_activated_timestamp
 
     def __process_motion_events(self):

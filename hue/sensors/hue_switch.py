@@ -1,27 +1,22 @@
+from dataclasses import dataclass
 from typing import List
 
 from helpers.enums.hue_dimmer_event import HueDimmerEvent
-from hue.sensors.sensor import Sensor
+from helpers.enums.sensor_types import SensorType
+from hue.sensors.sensor_abc import SensorABC
 from interfaces.sensors.i_switch import ISwitch
 
 
+@dataclass
 class SwitchState:
-
-    def __init__(self, button_event: HueDimmerEvent, last_updated):
-        self.button_event = button_event
-        self.last_updated = last_updated
-
-    def __eq__(self, other):
-        if not isinstance(other, SwitchState):
-            # don't attempt to compare against unrelated types
-            return NotImplemented
-
-        return self.button_event == other.button_event and self.last_updated == other.last_updated
+    button_event: HueDimmerEvent
+    last_updated: float
 
 
-class HueSwitch(Sensor, ISwitch):
+class HueSwitch(SensorABC, ISwitch):
 
-    def __init__(self, sensor_id, unique_id, name, sensor_type, button_event, last_updated):
+    def __init__(self, sensor_id: id, unique_id: str, name: str, sensor_type: SensorType, button_event: HueDimmerEvent,
+                 last_updated: float):
         super().__init__(sensor_id, name, sensor_type)
         self.unique_id = unique_id
         self.switch_state = SwitchState(button_event, last_updated)
@@ -64,11 +59,10 @@ class HueSwitch(Sensor, ISwitch):
     def get_unique_id(self):
         return self.unique_id
 
-    def get_last_update_date(self):
-        try:
-            return self.last_states[-1].last_updated
-        except IndexError:
-            return False
+    def get_last_update_date(self) -> float:
+        if len(self.last_states) == 0:
+            return 0
+        return self.last_states[-1].last_updated
 
     def get_name(self):
         return self.name

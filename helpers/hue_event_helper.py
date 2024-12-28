@@ -5,11 +5,15 @@ from helpers.enums.sensor_types import SensorType
 class HueEventHelper:
 
     @staticmethod
-    def get_button_event_enum_from_code(value):
-        return HueDimmerEvent(value) if value in HueDimmerEvent._value2member_map_ else None
+    def get_button_event_enum_from_code(value: str):
+        for dimmer_event in HueDimmerEvent:
+            if dimmer_event.value == value:
+                return dimmer_event
+        return None
 
     @staticmethod
-    def get_sensor_enum_from_string(value):
-        return SensorType(value) if value in SensorType._value2member_map_ else None
-
-
+    def get_sensor_enum_from_string(value: str):
+        for sensor in SensorType:
+            if sensor.value == value:
+                return sensor
+        return None

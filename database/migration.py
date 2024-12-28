@@ -21,7 +21,8 @@ class Migration:
         self.connection.close()
         # committing our connection
 
-    def create_tables_if_not_exist(self, cur):
+    @staticmethod
+    def create_tables_if_not_exist(cur):
         cur.execute('''
            CREATE TABLE IF NOT EXISTS lights(
                 id text PRIMARY KEY,
