@@ -1,11 +1,13 @@
 from automation.brain import Brain
 from database.data_layer import DataLayer
 from database.migration import Migration
+from hue.data_loader.hue_sensors_loader import HueSensorsLoader
+from hue.handlers.hue_daylight_sensor_handler import HueDaylightSensorHandler
+from hue.handlers.hue_lights_handler import HueLightsHandler
+from hue.handlers.hue_motion_sensor_handler import HueMotionSensorHandler
+from hue.handlers.hue_switches_handler import HueSwitchesHandler
+from hue.handlers.hue_temperature_sensor_handler import HueTemperatureSensorHandler
 from hue.hue_connector import HueConnector
-from hue.lights.hue_lights_handler import HueLightsHandler
-from hue.sensors.hue_sensors_manager import HueSensorsManager
-from hue.sensors.hue_switches_handler import HueSwitchesHandler
-
 from models.managers.audio_manager import AudioManager
 from models.managers.lights_manager import LightsManager
 from models.managers.mail_manager import MailManager
@@ -17,20 +19,27 @@ from settings.settings import Settings
 if __name__ == '__main__':
     print("Starting home automation")
     settings = Settings()
-    hue_connection = HueConnector(settings)
     database_layer = DataLayer()
-    hue_lights_handler = HueLightsHandler(hue_connection, database_layer)
-    sensor_manager = HueSensorsManager(hue_connection)
-    hue_switches_handler = HueSwitchesHandler(sensor_manager)
+
+    hue_connection = HueConnector(settings)
+    hue_sensor_loader = HueSensorsLoader(hue_connection)
+
+    hue_lights_handler = HueLightsHandler(hue_connection)
+    hue_motion_sensor_handler = HueMotionSensorHandler(hue_sensor_loader)
+    hue_switches_handler = HueSwitchesHandler(hue_sensor_loader)
+    hue_daylight_sensor_handler = HueDaylightSensorHandler(hue_sensor_loader)
+    hue_temperature_sensor_handler = HueTemperatureSensorHandler(hue_sensor_loader)
+
     audio_manager = AudioManager(settings)
     sms_manager = SmsManager(settings)
     mail_manager = MailManager(settings)
 
     lights_manager = LightsManager(hue_lights_handler)
     switches_manager = SwitchesManager(hue_switches_handler)
-    motion_sensor_manager = MotionSensorManager(sensor_manager)
+    motion_sensor_manager = MotionSensorManager(hue_motion_sensor_handler)
 
-    brain = Brain(database_layer, lights_manager, switches_manager, motion_sensor_manager, audio_manager, sms_manager,
+    brain = Brain(database_layer, lights_manager, switches_manager, motion_sensor_manager,
+                  hue_temperature_sensor_handler, hue_daylight_sensor_handler, audio_manager, sms_manager,
                   mail_manager, settings)
 
     migration = Migration()
