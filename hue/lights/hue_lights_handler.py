@@ -84,7 +84,7 @@ class HueLightsHandler(HueManagerAbc, ILightsHandler):
                     elif light_type == 'Color temperature light':
                         pass
                     else:
-                        print(f"no method available for lights of type: {type}")
+                        print(f"no method available for lights of type: {light_type}")
 
                 except KeyError as e:
                     print(f"Failed to load data: {e}")

@@ -15,6 +15,8 @@ class HueMotionSensor(SensorABC, IMotionSensor):
         self.last_states: List[MotionSensorState] = [self.state]
 
     def add_state(self, state: MotionSensorState):
+        if len(self.last_states) > 500:
+            del self.last_states[0]
         self.last_states.append(state)
         self.state = state
 

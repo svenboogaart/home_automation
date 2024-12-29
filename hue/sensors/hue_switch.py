@@ -23,6 +23,8 @@ class HueSwitch(SensorABC, ISwitch):
         self.last_states: List[SwitchState] = [self.switch_state]
 
     def add_state(self, state: SwitchState):
+        if len(self.last_states) > 500:
+            del self.last_states[0]
         self.last_states.append(state)
         self.switch_state = state
 
