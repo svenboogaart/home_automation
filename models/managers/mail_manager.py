@@ -1,10 +1,10 @@
+import smtplib
 import threading
+from datetime import datetime
 from email.mime.text import MIMEText
 
 from settings.settings import Settings
-import smtplib
-from email.message import EmailMessage
-from datetime import datetime
+
 
 class MailManager:
 
@@ -22,8 +22,8 @@ class MailManager:
                         recipients = [to]
 
                         msg = MIMEText(message)
-                        msg['Subject'] = "Motion detected %s" % self.__settings.location
-                        msg['From'] = "Home security <%s>" % self.__settings.mail_from
+                        msg['Subject'] = f"Motion detected {self.__settings.location}"
+                        msg['From'] = f"Home security <{self.__settings.mail_from}>"
                         msg['To'] = ', '.join(recipients)
 
                         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
@@ -31,11 +31,16 @@ class MailManager:
                             smtp_server.sendmail(self.__settings.mail_from, recipients, msg.as_string())
 
                         self.__last_time_send = int(datetime.timestamp(datetime.now()))
-                    except Exception as e:
-                        print("Failed to send e-mail: %s" % e)
+                    except smtplib.SMTPException as e:
+                        print(f"SMTP error occurred: {e}")
+                    except Exception as e:  # Catch any other unexpected exceptions
+                        print(f"An unexpected error occurred: {e}")
                 else:
-                    print("Not sending email, only %s seconds elapsed since last email" % elapsed_time)
+                    print(f"Not sending email, only {elapsed_time} seconds elapsed since last email")
 
         # Create a new thread and start it
         thread = threading.Thread(target=send_email_in_thread)
         thread.start()
+
+    def get_last_date_send(self):
+        return self.__last_time_send

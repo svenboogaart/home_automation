@@ -4,6 +4,8 @@ import time
 from datetime import datetime
 
 from helpers.enums.hue_colors import HueColor
+from interfaces.handlers.i_daylight_sensor_handler import IDaylightSensorHandler
+from interfaces.handlers.i_temperature_sensor_handler import ITemperatureSensorHandler
 from models.managers.audio_manager import AudioManager
 from models.managers.lights_manager import LightsManager
 from models.managers.mail_manager import MailManager
@@ -18,12 +20,16 @@ TICK_TIME_SECONDS = 2
 class Brain:
 
     def __init__(self, database_layer, lights_manager: LightsManager, switches_manager: SwitchesManager,
-                 motion_sensor_manager: MotionSensorManager, audio_manager: AudioManager, sms_manager: SmsManager,
+                 motion_sensor_manager: MotionSensorManager, temperature_sensor_handler: ITemperatureSensorHandler,
+                 daylight_sensor_handler: IDaylightSensorHandler,
+                 audio_manager: AudioManager, sms_manager: SmsManager,
                  mail_manager: MailManager, settings: Settings):
         self.__database_layer = database_layer
         self.__lights_manager = lights_manager
         self.__switches_manager = switches_manager
         self.__motion_sensor_manager = motion_sensor_manager
+        self.__daylight_sensor_handler = daylight_sensor_handler
+        self.__temperature_sensor_handler = temperature_sensor_handler
         self.__audio_manager = audio_manager
         self.__mail_manager = mail_manager
         self.__sms_manager = sms_manager
@@ -41,7 +47,7 @@ class Brain:
             self.update()
 
     def start_brain(self):
-        print("Preparing brain")
+        print(f"Preparing brain, Alarm state: {self.__alarm_active}")
         # self.database_layer.store_lights(self.lights_manager.get_lights())
         # self.database_layer.store_switches(self.switches_manager.get_switches())
 
@@ -54,26 +60,42 @@ class Brain:
     def __update_device_states(self):
         self.__lights_manager.update_lights()
         self.__switches_manager.update_switches()
-        self.__motion_sensor_manager.update_sensors()
+        self.__motion_sensor_manager.update_motion_sensors()
+        self.__daylight_sensor_handler.update_daylight_sensors()
+        self.__temperature_sensor_handler.update_temperature_sensors()
 
     def __log_data(self):
-        if self.__settings.should_log_data:
-            self.__database_layer.store_lights(self.__lights_manager.get_lights())
-            self.__database_layer.store_switches(self.__switches_manager.get_switches())
+        try:
+            if self.__settings.should_log_data:
+                # Register all devices
+                self.__database_layer.store_lights(self.__lights_manager.get_lights())
+                self.__database_layer.store_switches(self.__switches_manager.get_switches())
+                self.__database_layer.log_motion_sensors(self.__motion_sensor_manager.get_motion_sensors())
+                self.__database_layer.log_daylight_sensors(self.__daylight_sensor_handler.get_daylight_sensors())
+                self.__database_layer.log_temperature_sensors(
+                    self.__temperature_sensor_handler.get_temperature_sensors())
 
-            for switch in self.__switches_manager.get_switches():
-                if switch.state_changed():
-                    self.__database_layer.log_switch_event(switch)
+                for switch in self.__switches_manager.get_switches():
+                    if switch.state_changed():
+                        self.__database_layer.log_switch_event(switch)
 
-            for light in self.__lights_manager.get_lights():
-                if light.state_changed():
-                    self.__database_layer.log_light_state(light)
+                for light in self.__lights_manager.get_lights():
+                    if light.state_changed():
+                        self.__database_layer.log_light_state(light)
 
-            self.__database_layer.log_motion_sensors(self.__motion_sensor_manager.get_sensors())
+                for motion_sensor in self.__motion_sensor_manager.get_motion_sensors():
+                    if motion_sensor.state_changed():
+                        self.__database_layer.log_motion_sensor_event(motion_sensor)
 
-            for motion_sensor in self.__motion_sensor_manager.get_sensors():
-                if motion_sensor.state_changed():
-                    self.__database_layer.log_motion_sensor_event(motion_sensor)
+                for daylight_sensor in self.__daylight_sensor_handler.get_daylight_sensors():
+                    if daylight_sensor.state_changed():
+                        self.__database_layer.log_daylight_sensor_event(daylight_sensor)
+
+                for temperature_sensor in self.__temperature_sensor_handler.get_temperature_sensors():
+                    if temperature_sensor.state_changed():
+                        self.__database_layer.log_temperature_sensor_event(temperature_sensor)
+        except Exception as e:
+            print(f"Failed to save the data in the database {e}")
 
     def __event_based_processing(self):
         self.__process_switch_events()
@@ -118,12 +140,11 @@ class Brain:
                         self.__alarm_active = True
                         self.__alarm_activated_timestamp = int(datetime.timestamp(datetime.now()))
 
-
-    def __get_seconds_after_alarm_activate(self)->int:
+    def __get_seconds_after_alarm_activate(self) -> int:
         return int(datetime.timestamp(datetime.now())) - self.__alarm_activated_timestamp
 
     def __process_motion_events(self):
-        for motion_sensor in self.__motion_sensor_manager.get_sensors():
+        for motion_sensor in self.__motion_sensor_manager.get_motion_sensors():
             if motion_sensor.new_motion_detected():
                 if self.__alarm_active:
                     if self.__get_seconds_after_alarm_activate() > 10:

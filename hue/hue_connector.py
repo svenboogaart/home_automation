@@ -1,6 +1,6 @@
 import json
 
-import requests as requests
+import requests
 
 from hue.hue_connection_settings import HueConnectionSettings
 
@@ -18,8 +18,7 @@ class HueConnector:
             request = requests.put(full_path, data, timeout=2.50)
             if request.status_code == 200:
                 return request.text
-            else:
-                return None
+            return None
         except Exception as e:
             print("exception in run_put_request")
             print(e)
@@ -28,13 +27,12 @@ class HueConnector:
     def run_get_request(self, path):
         full_path = self.get_full_path(path)
         try:
-            request = requests.get(full_path, timeout=2.50)
+            request = requests.get(full_path, timeout=0.1)
             if request.status_code == 200:
                 return request.text
-            else:
-                return None
+            return None
         except Exception as exception:
-            print("exception in run_get_request , %s" % full_path)
+            print(f"exception in run_get_request , {full_path}")
             print(exception)
             return None
 
@@ -50,10 +48,10 @@ class HueConnector:
         if connection_data:
             loaded_data = json.loads(connection_data)
             connection_id = loaded_data[0]["id"]
-            internalipaddress = loaded_data[0]["internalipaddress"]
+            internal_ipaddress = loaded_data[0]["internalipaddress"]
             port = loaded_data[0]["port"]
             print("Can connect")
-            return HueConnectionSettings(connection_id, internalipaddress, port)
-        else:
-            print("Connecting to the bridge not possible.")
-            return None
+            return HueConnectionSettings(connection_id, internal_ipaddress, port)
+
+        print("Connecting to the bridge not possible.")
+        return None

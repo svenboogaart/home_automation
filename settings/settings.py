@@ -2,6 +2,8 @@ import os
 
 from dotenv import load_dotenv
 
+# pylint: disable=R0903
+
 ENV_HUE_USER_KEY = "HUE_USER"
 ENV_HUE_IP_ADDRESS_KEY = "HUE_IP_ADDRESS"
 LOG_DATA = "LOG_DATA"
@@ -19,6 +21,7 @@ LOCATION = "LOCATION"
 MAIL_TO = "MAIL_TO"
 MAIL_FROM = "MAIL_FROM"
 MAIL_PASSWORD = "MAIL_PASSWORD"
+
 
 class Settings:
 
@@ -41,6 +44,3 @@ class Settings:
         self.mail_password = os.getenv(MAIL_PASSWORD, None)
         self.location = os.getenv(LOCATION, None)
         self.mail_to = os.getenv(MAIL_TO, None)
-
-
-

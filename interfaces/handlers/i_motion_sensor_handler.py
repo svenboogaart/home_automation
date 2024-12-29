@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from typing import List
 
-from interfaces.sensors.i_switch import ISwitch
+from hue.sensors.hue_motion_sensor import HueMotionSensor
 
 
 class IMotionSensorHandler(metaclass=ABCMeta):
@@ -11,6 +11,5 @@ class IMotionSensorHandler(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_motion_sensor(self) -> List[ISwitch]:
+    def get_motion_sensors(self) -> List[HueMotionSensor]:
         pass
-

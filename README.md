@@ -37,3 +37,7 @@ https://developers.meethue.com/develop/get-started-2/
 |                   | presence               | false                  | No Motion detected                                         |
 |                   | temperature            | xxxx                   | Temperature in °C multiplied by 100 (2655 == 26.55°C)      |
 |                   | lightlevel             | xxxxx                  | Lightlevel (0 ~ dark, 20000 ~ normal, 40000 ~ very bright) |
+
+## Requirements
+
+Python 3.9+

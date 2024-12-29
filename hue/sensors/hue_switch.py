@@ -1,35 +1,33 @@
+from dataclasses import dataclass
 from typing import List
 
 from helpers.enums.hue_dimmer_event import HueDimmerEvent
-from hue.sensors.sensor import Sensor
+from helpers.enums.sensor_types import SensorType
+from hue.sensors.hue_sensor_abc import HueSensorABC
 from interfaces.sensors.i_switch import ISwitch
 
 
+@dataclass
 class SwitchState:
-
-    def __init__(self, button_event: HueDimmerEvent, last_updated):
-        self.button_event = button_event
-        self.last_updated = last_updated
-
-    def __eq__(self, other):
-        if not isinstance(other, SwitchState):
-            # don't attempt to compare against unrelated types
-            return NotImplemented
-
-        return self.button_event == other.button_event and self.last_updated == other.last_updated
+    button_event: HueDimmerEvent
+    last_updated: float
 
 
-class HueSwitch(Sensor, ISwitch):
+class HueSwitch(HueSensorABC, ISwitch):
 
-    def __init__(self, sensor_id, unique_id, name, sensor_type, button_event, last_updated):
+    def __init__(self, sensor_id: id, unique_id: str, name: str, sensor_type: SensorType, switch_sate: SwitchState):
         super().__init__(sensor_id, name, sensor_type)
         self.unique_id = unique_id
-        self.switch_state = SwitchState(button_event, last_updated)
-        self.last_states: List[SwitchState] = [self.switch_state]
+        self.last_states: List[SwitchState] = [switch_sate]
+
+    def get_state(self) -> SwitchState:
+        if len(self.last_states) > 0:
+            return self.last_states[-1]
 
     def add_state(self, state: SwitchState):
+        if len(self.last_states) > 500:
+            del self.last_states[0]
         self.last_states.append(state)
-        self.switch_state = state
 
     def state_changed(self):
         try:
@@ -42,6 +40,9 @@ class HueSwitch(Sensor, ISwitch):
             return (self.last_states[-1].button_event.is_released_event() and
                     self.last_states[-2].button_event.is_hold_event())
         return False
+
+    def get_last_event_code(self) -> int:
+        return self.get_state().button_event
 
     def is_pressed_event(self):
         try:
@@ -64,11 +65,10 @@ class HueSwitch(Sensor, ISwitch):
     def get_unique_id(self):
         return self.unique_id
 
-    def get_last_update_date(self):
-        try:
-            return self.last_states[-1].last_updated
-        except IndexError:
-            return False
+    def get_last_update_date(self) -> float:
+        if len(self.last_states) == 0:
+            return 0
+        return self.last_states[-1].last_updated
 
     def get_name(self):
         return self.name

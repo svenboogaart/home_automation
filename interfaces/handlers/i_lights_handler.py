@@ -12,7 +12,11 @@ class ILightsHandler(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def alarm_light(self, light_id, time_flash, time_pause, number_of_flashes, hue):
+    def alarm_light(self, light_id, hue, time_pause: int = 1, number_of_flashes: int = 1, time_flash: int = 1):
+        pass
+
+    @abstractmethod
+    def alarm_lights(self, hue, time_pause: int = 1, number_of_flashes: int = 1, time_flash: int = 1):
         pass
 
     @abstractmethod

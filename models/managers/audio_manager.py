@@ -2,7 +2,9 @@ import os
 import sys
 import threading
 from threading import Thread
+
 from playsound import playsound
+
 from settings.settings import Settings
 
 
@@ -15,9 +17,10 @@ class AudioManager:
                 if os.path.isfile(file_path):
                     playsound(file_path)
                 else:
-                    print("Failed to play audo, %s file not found " % file_path)
+                    print(f"Failed to play audio, {file_path} file not found ")
             except Exception as e:
-                print("Failed to send message : %s" % e)
+                print(f"Failed to send message : {e}")
+
         thread = threading.Thread(target=play_audio_file_threaded)
         thread.start()
 
@@ -37,8 +40,8 @@ class AudioManager:
     @staticmethod
     def say_something(text_to_say: str):
         if sys.platform.startswith('win'):
-            Thread(target=os.system, args=("say \'%s\'" % text_to_say,)).start()
+            Thread(target=os.system, args=(f"say \'{text_to_say}\'",)).start()
         elif sys.platform.startswith('linux'):
-            Thread(target=os.system, args=("spd-say \'%s\'" % text_to_say,)).start()
+            Thread(target=os.system, args=(f"spd-say \'{text_to_say}\'",)).start()
         else:
             print("Text to speach not supported for os")

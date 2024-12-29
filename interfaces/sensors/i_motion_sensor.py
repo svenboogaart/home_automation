@@ -1,17 +1,16 @@
 from abc import ABCMeta, abstractmethod
+from dataclasses import dataclass
 
 from interfaces.i_device import IDevice
 
 
+@dataclass
 class MotionSensorState:
-
-    def __init__(self, presence: bool, last_updated):
-        self.presence = presence
-        self.last_updated = last_updated
+    presence: bool
+    last_updated: float
 
     def __eq__(self, other):
         if not isinstance(other, MotionSensorState):
-            # don't attempt to compare against unrelated types
             return NotImplemented
         return self.presence == other.presence and self.last_updated == other.last_updated
 
@@ -19,15 +18,7 @@ class MotionSensorState:
 class IMotionSensor(IDevice, metaclass=ABCMeta):
 
     @abstractmethod
-    def state_changed(self):
-        pass
-
-    @abstractmethod
     def motion_detected(self):
-        pass
-
-    @abstractmethod
-    def get_last_update_date(self):
         pass
 
     @abstractmethod
