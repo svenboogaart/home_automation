@@ -3,8 +3,10 @@ import sqlite3
 from typing import List, Tuple
 
 from interfaces.lights.i_light import ILight
+from interfaces.sensors.i_daylight_sensor import IDaylightSensor
 from interfaces.sensors.i_motion_sensor import IMotionSensor
 from interfaces.sensors.i_switch import ISwitch
+from interfaces.sensors.i_temperature_sensor import ITemperatureSensor
 
 
 class DataLayer:
@@ -66,10 +68,38 @@ class DataLayer:
         query = "INSERT OR IGNORE INTO motion_sensors (id, name) VALUES(?, ?)"
         self._execute_insert(query, insert_data)
 
+    def log_daylight_sensors(self, sensors: List[IDaylightSensor]):
+        insert_data = []
+        for sensor in sensors:
+            insert_data.append((sensor.get_unique_id(), sensor.get_name()))
+
+        query = "INSERT OR IGNORE INTO daylight_sensors (id, name) VALUES(?, ?)"
+        self._execute_insert(query, insert_data)
+
+    def log_temperature_sensors(self, sensors: List[ITemperatureSensor]):
+        insert_data = []
+        for sensor in sensors:
+            insert_data.append((sensor.get_unique_id(), sensor.get_name()))
+
+        query = "INSERT OR IGNORE INTO temperature_sensors (id, name) VALUES(?, ?)"
+        self._execute_insert(query, insert_data)
+
     def log_motion_sensor_event(self, motion_sensor: IMotionSensor):
         insert_data = [
             (motion_sensor.get_unique_id(), int(motion_sensor.motion_detected()), motion_sensor.get_last_update_date())]
         query = "INSERT INTO motion_sensor_events (motion_sensor_id, presence_detected, last_updated) VALUES(?, ?, ?)"
+        self._execute_insert(query, insert_data)
+
+    def log_daylight_sensor_event(self, sensor: IDaylightSensor):
+        insert_data = [
+            (sensor.get_unique_id(), int(sensor.daylight_detected()), sensor.get_last_update_date())]
+        query = "INSERT INTO daylight_sensor_events (daylight_sensor_id, daylight_detected, last_updated) VALUES(?, ?, ?)"
+        self._execute_insert(query, insert_data)
+
+    def log_temperature_sensor_event(self, sensor: ITemperatureSensor):
+        insert_data = [
+            (sensor.get_unique_id(), round(sensor.get_temperature(), 2), sensor.get_last_update_date())]
+        query = "INSERT INTO temperature_sensor_events (temperature_sensor_id, temperature, last_updated) VALUES(?, ?, ?)"
         self._execute_insert(query, insert_data)
 
     def _execute_insert(self, query: str, data: List[Tuple]):

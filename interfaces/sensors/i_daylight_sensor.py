@@ -17,9 +17,5 @@ class IDaylightSensor(IDevice, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def add_state(self, state: DayLightSensorState):
-        pass
-
-    @abstractmethod
-    def get_state(self) -> DayLightSensorState:
+    def get_daylight_sensor_state(self) -> DayLightSensorState:
         pass

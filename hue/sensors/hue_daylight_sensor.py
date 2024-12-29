@@ -4,7 +4,7 @@ from hue.sensors.hue_sensor_abc import HueSensorABC
 from interfaces.sensors.i_daylight_sensor import IDaylightSensor, DayLightSensorState
 
 
-class DayLightSensor(HueSensorABC, IDaylightSensor):
+class HueDayLightSensor(HueSensorABC, IDaylightSensor):
 
     def __init__(self, sensor_id, unique_id, name, sensor_type, sensor_state: DayLightSensorState):
         super().__init__(sensor_id, name, sensor_type)
@@ -35,3 +35,6 @@ class DayLightSensor(HueSensorABC, IDaylightSensor):
         if len(self.last_states) < 2:
             return True
         return self.last_states[-1].daylight_detected != self.last_states[-2].daylight_detected
+
+    def get_daylight_sensor_state(self) -> DayLightSensorState:
+        return self.get_state()

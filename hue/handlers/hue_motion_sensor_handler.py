@@ -19,7 +19,6 @@ class HueMotionSensorHandler(IMotionSensorHandler):
         return list(self._known_motion_sensor.values())
 
     def update_motion_sensor(self, motion_sensor: HueMotionSensor):
-
         if motion_sensor.get_unique_id() in self._known_motion_sensor:
             self._known_motion_sensor[motion_sensor.get_unique_id()].add_state(motion_sensor.get_state())
         else:
