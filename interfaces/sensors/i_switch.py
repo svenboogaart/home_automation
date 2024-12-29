@@ -10,6 +10,10 @@ class ISwitch(IDevice, metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def get_last_event_code(self) -> int:
+        pass
+
+    @abstractmethod
     def is_pressed_event(self):
         pass
 

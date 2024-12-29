@@ -5,13 +5,13 @@ from typing import List
 from helpers.enums.sensor_types import SensorType
 from helpers.hue_event_helper import HueEventHelper
 from hue.hue_connector import HueConnector
-from hue.hue_manager_abc import HueManagerAbc
+from hue.hue_data_loader_abc import HueDataLoaderAbc
 from hue.sensors.hue_motion_sensor import HueMotionSensor
-from hue.sensors.hue_switch import HueSwitch
+from hue.sensors.hue_switch import HueSwitch, SwitchState
 
 
 # pylint: disable=W0246
-class HueSensorsManager(HueManagerAbc):
+class HueSensorsLoader(HueDataLoaderAbc):
 
     def __init__(self, hue_connector: HueConnector):
         super().__init__(hue_connector)
@@ -49,8 +49,8 @@ class HueSensorsManager(HueManagerAbc):
         unique_id = json_sensor["uniqueid"]
         button_event = HueEventHelper.get_button_event_enum_from_code(json_sensor["state"]["buttonevent"])
         last_updated = json_sensor["state"]["lastupdated"]
-        return HueSwitch(motion_sensor_id, unique_id, name, SensorType.SWITCH, button_event,
-                         self.__get_timestamp_from_string(last_updated))
+        return HueSwitch(motion_sensor_id, unique_id, name, SensorType.SWITCH,
+                         SwitchState(button_event, self.__get_timestamp_from_string(last_updated)))
 
     def __create_motion_sensor_from_json(self, motion_sensor_id, json_sensor) -> HueMotionSensor:
         name = json_sensor["name"]

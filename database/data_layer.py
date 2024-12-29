@@ -51,7 +51,7 @@ class DataLayer:
              int(switch.is_hold_event()),
              int(switch.is_released_event()),
              int(switch.is_release_long_click()),
-             123
+             switch.get_last_event_code()
              )]
 
         query = ("INSERT INTO switch_event (switch_id, last_updated, button_pressed, hold, release, release_hold, "
