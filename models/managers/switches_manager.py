@@ -5,7 +5,6 @@ from interfaces.sensors.i_switch import ISwitch
 
 
 class SwitchesManager:
-    known_switches = {}
 
     def __init__(self, switches_handler: ISwitchesHandler):
         self._switches_handler = switches_handler

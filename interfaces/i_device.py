@@ -8,7 +8,7 @@ class IDevice(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def state_changed(self):
+    def state_changed(self) -> bool:
         pass
 
     @abstractmethod

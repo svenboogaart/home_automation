@@ -79,3 +79,37 @@ class Migration:
                 data_onboarded_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(motion_sensor_id) REFERENCES motion_sensors(id)
             )''')
+
+        cur.execute('''
+                    CREATE TABLE IF NOT EXISTS daylight_sensors(
+                         id TEXT PRIMARY KEY,
+                         name TEXT NOT NULL,
+                         registration_date DATETIME DEFAULT CURRENT_TIMESTAMP
+                    )''')
+
+        cur.execute('''
+                    CREATE TABLE IF NOT EXISTS daylight_sensor_events(  
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        daylight_sensor_id TEXT,
+                        daylight_detected integer,
+                        last_updated TIMESTAMP, 
+                        data_onboarded_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY(daylight_sensor_id) REFERENCES daylight_sensors(id)
+                    )''')
+
+        cur.execute('''
+                    CREATE TABLE IF NOT EXISTS temperature_sensors(
+                         id TEXT PRIMARY KEY,
+                         name TEXT NOT NULL,
+                         registration_date DATETIME DEFAULT CURRENT_TIMESTAMP
+                    )''')
+
+        cur.execute('''
+                    CREATE TABLE IF NOT EXISTS temperature_sensor_events(  
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        temperature_sensor_id TEXT,
+                        temperature REAL,
+                        last_updated TIMESTAMP, 
+                        data_onboarded_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY(temperature_sensor_id) REFERENCES temperature_sensors(id)
+                    )''')

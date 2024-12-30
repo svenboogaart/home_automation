@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import IntEnum
 
 
-class HueDimmerEvent(Enum):
+class HueDimmerEvent(IntEnum):
     HARD_PRESS_ON = 1000
     LONG_PRESS_ON = 1001
     RELEASE_ON = 1003

@@ -17,6 +17,8 @@ class HueLight(ILight):
         self.last_updated = last_updated
 
     def add_state(self, state: LightState):
+        if len(self.last_states) > 500:
+            del self.last_states[0]
         self.light_state = state
         self.last_states.append(state)
 

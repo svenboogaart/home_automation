@@ -3,24 +3,22 @@ import threading
 import time
 from typing import List
 
-from database.data_layer import DataLayer
 from helpers.enums.device_state import DeviceState
 from hue.hue_connector import HueConnector
-from hue.hue_manager_abc import HueManagerAbc
+from hue.hue_data_loader_abc import HueDataLoaderAbc
 from hue.lights.hue_light import HueLight
 from interfaces.handlers.i_lights_handler import ILightsHandler
 from models.lights.light_state import LightState
 
 
-class HueLightsHandler(HueManagerAbc, ILightsHandler):
+class HueLightsHandler(HueDataLoaderAbc, ILightsHandler):
 
-    def __init__(self, hue_connector: HueConnector, data_layer: DataLayer):
-        self.data_layer = data_layer
+    def __init__(self, hue_connector: HueConnector):
         super().__init__(hue_connector)
         self.known_lights = {}
 
     def update_lights(self):
-        for light in self.get_lights_from_manager():
+        for light in self.get_lights_from_connector():
             self.update_light(light)
 
     def update_light(self, light: HueLight):
@@ -32,7 +30,7 @@ class HueLightsHandler(HueManagerAbc, ILightsHandler):
     def get_lights(self) -> List[HueLight]:
         return list(self.known_lights.values())
 
-    def get_lights_from_manager(self) -> List[HueLight]:
+    def get_lights_from_connector(self) -> List[HueLight]:
         lights: List[HueLight] = []
         lights_data = self.hue_connector.run_get_request("lights")
         if lights_data:
@@ -67,9 +65,9 @@ class HueLightsHandler(HueManagerAbc, ILightsHandler):
             light_type = json_light["type"]
             unique_id = json_light["uniqueid"]
             state = DeviceState.OFF
-            brightness, hue, saturation = "", "", "'"
+            brightness, hue, saturation = "", "", ""
             if json_light["state"]["on"]:
-
+                state = DeviceState.ON
                 try:
                     brightness = json_light["state"]["bri"]
                 except KeyError as e:
@@ -84,7 +82,7 @@ class HueLightsHandler(HueManagerAbc, ILightsHandler):
                     elif light_type == 'Color temperature light':
                         pass
                     else:
-                        print(f"no method available for lights of type: {type}")
+                        print(f"no method available for lights of type: {light_type}")
 
                 except KeyError as e:
                     print(f"Failed to load data: {e}")
@@ -107,6 +105,10 @@ class HueLightsHandler(HueManagerAbc, ILightsHandler):
                 "sat": new_state.saturation}
         return self.hue_connector.run_put_request(f"lights/{light_id}/state", json.dumps(data))
 
+    def alarm_lights(self, hue, time_pause: int = 1, number_of_flashes: int = 1, time_flash: int = 1):
+        for light in self.known_lights:
+            self.alarm_light(light.id, time_pause, number_of_flashes, time_flash)
+
     def alarm_light(self, light_id, hue, time_pause: int = 1, number_of_flashes: int = 1, time_flash: int = 1):
         def flash_light():
             light = self.get_light(light_id)
@@ -124,4 +126,3 @@ class HueLightsHandler(HueManagerAbc, ILightsHandler):
 
         # Start the flash_light function in a separate thread
         threading.Thread(target=flash_light).start()
-

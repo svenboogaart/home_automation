@@ -16,8 +16,7 @@ class LightsManager:
         return self._lights_handler.get_lights()
 
     def alarm_lights(self, time_flash, time_pause, number_of_flashes):
-        for light in self._lights_handler.get_lights():
-            self.alarm_light(light.id, time_flash, time_pause, number_of_flashes)
+        self._lights_handler.alarm_lights(time_flash, time_pause, number_of_flashes)
 
     def alarm_light(self, light_id, time_flash, time_pause, number_of_flashes, color: HueColor = HueColor.RED):
         self._lights_handler.alarm_light(light_id, time_flash, time_pause, number_of_flashes, color)
