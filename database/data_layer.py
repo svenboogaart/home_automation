@@ -3,6 +3,7 @@ import sqlite3
 from typing import List, Tuple
 
 from interfaces.lights.i_light import ILight
+from interfaces.sensors.i_contact_sensor import IContactSensor
 from interfaces.sensors.i_daylight_sensor import IDaylightSensor
 from interfaces.sensors.i_motion_sensor import IMotionSensor
 from interfaces.sensors.i_switch import ISwitch
@@ -84,6 +85,14 @@ class DataLayer:
         query = "INSERT OR IGNORE INTO temperature_sensors (id, name) VALUES(?, ?)"
         self._execute_insert(query, insert_data)
 
+    def log_contact_sensors(self, sensors: List[IContactSensor]):
+        insert_data = []
+        for sensor in sensors:
+            insert_data.append((sensor.get_unique_id(), sensor.get_name()))
+
+        query = "INSERT OR IGNORE INTO contact_sensors (id, name) VALUES(?, ?)"
+        self._execute_insert(query, insert_data)
+
     def log_motion_sensor_event(self, motion_sensor: IMotionSensor):
         insert_data = [
             (motion_sensor.get_unique_id(), int(motion_sensor.motion_detected()), motion_sensor.get_last_update_date())]
@@ -100,6 +109,12 @@ class DataLayer:
         insert_data = [
             (sensor.get_unique_id(), round(sensor.get_temperature(), 2), sensor.get_last_update_date())]
         query = "INSERT INTO temperature_sensor_events (temperature_sensor_id, temperature, last_updated) VALUES(?, ?, ?)"
+        self._execute_insert(query, insert_data)
+
+    def log_contact_sensor_event(self, sensor: IContactSensor):
+        insert_data = [
+            (sensor.get_unique_id(), int(sensor.has_contact()), sensor.get_last_update_date())]
+        query = "INSERT INTO contact_sensor_events (contact_sensor_id, has_contact, last_updated) VALUES(?, ?, ?)"
         self._execute_insert(query, insert_data)
 
     def _execute_insert(self, query: str, data: List[Tuple]):

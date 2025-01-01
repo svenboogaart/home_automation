@@ -2,7 +2,19 @@
 
 # Home Automation
 
-Lights, sensors and security
+Using lights and sensors for custom automations.
+Hue based easy to extend for different platfroms.
+
+Some options
+
+- Send an e-mail if motions is detected
+- Options to activate home security by using the hue switch.
+- Flash your lights in any color if motions is detected
+- Play alarm sound if motions is detected
+
+## Requirements
+
+Python 3.9+
 
 ## Lights
 
@@ -38,6 +50,15 @@ https://developers.meethue.com/develop/get-started-2/
 |                   | temperature            | xxxx                   | Temperature in °C multiplied by 100 (2655 == 26.55°C)      |
 |                   | lightlevel             | xxxxx                  | Lightlevel (0 ~ dark, 20000 ~ normal, 40000 ~ very bright) |
 
-## Requirements
+## Hue light types
 
-Python 3.9+
+| **Type**                    | **Capabilities**                                      | **Examples**                                         |
+|-----------------------------|-------------------------------------------------------|------------------------------------------------------|
+| **Extended Color Light**    | Full RGB color control, brightness, color temperature | Hue White and Color Ambiance, Hue Lightstrip Plus    |
+| **Color Temperature Light** | Adjust white temperature (warm to cool white)         | Hue White Ambiance                                   |
+| **Dimmable Light**          | Dimming only, fixed white color                       | Hue White bulbs                                      |
+| **Effect Light**            | Dynamic lighting effects (e.g., colorloop)            | Hue Lightstrips, Hue Play                            |
+| **White Light**             | Fixed white, dimming only                             | Hue White bulbs                                      |
+| **Lightstrip**              | Full RGB color control, effects, brightness           | Hue Lightstrip Plus, Hue Play                        |
+| **Lamps & Fixtures**        | White or RGB light, color temperature control         | Hue Go, Hue Play, Hue White and Color Ambiance lamps |
+| **Group Light**             | Control multiple lights together                      | Group of Hue bulbs in a room                         |

@@ -23,7 +23,7 @@ class HueMotionSensor(HueSensorABC, IMotionSensor):
     def state_changed(self):
         if len(self.last_states) < 2:
             return True
-        return self.last_states[-1] != self.last_states[-2]
+        return self.last_states[-1].presence != self.last_states[-2].presence
 
     def motion_detected(self):
         return len(self.last_states) > 0 and self.last_states[-1] is not None and self.last_states[-1].presence
