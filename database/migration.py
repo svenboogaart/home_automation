@@ -113,3 +113,20 @@ class Migration:
                         data_onboarded_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         FOREIGN KEY(temperature_sensor_id) REFERENCES temperature_sensors(id)
                     )''')
+
+        cur.execute('''
+                    CREATE TABLE IF NOT EXISTS contact_sensors(
+                         id TEXT PRIMARY KEY,
+                         name TEXT NOT NULL,
+                         registration_date DATETIME DEFAULT CURRENT_TIMESTAMP
+                    )''')
+
+        cur.execute('''
+                    CREATE TABLE IF NOT EXISTS contact_sensor_events(  
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        contact_sensor_id TEXT,
+                        has_contact int,
+                        last_updated TIMESTAMP, 
+                        data_onboarded_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY(contact_sensor_id) REFERENCES contact_sensors(id)
+                    )''')

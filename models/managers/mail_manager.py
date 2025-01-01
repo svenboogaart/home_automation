@@ -1,6 +1,6 @@
 import smtplib
 import threading
-from datetime import datetime
+import time
 from email.mime.text import MIMEText
 
 from settings.settings import Settings
@@ -10,19 +10,20 @@ class MailManager:
 
     def __init__(self, settings: Settings):
         self.__settings = settings
-        self.sms_send_after_alarm_activated = False
         self.__last_time_send = 0
 
-    def send_mail(self, message: str, to: str):
+    def send_mail(self, message: str, to: str, subject: str = "home security"):
+        print(f"Sending mail, subject {subject}, message {message}")
+
         def send_email_in_thread():
-            elapsed_time = int(datetime.timestamp(datetime.now())) - self.__last_time_send
+            elapsed_time = time.time() - self.__last_time_send
             if self.__settings.send_mail:
                 if elapsed_time > 60:
                     try:
                         recipients = [to]
 
                         msg = MIMEText(message)
-                        msg['Subject'] = f"Motion detected {self.__settings.location}"
+                        msg['Subject'] = subject
                         msg['From'] = f"Home security <{self.__settings.mail_from}>"
                         msg['To'] = ', '.join(recipients)
 
@@ -30,7 +31,7 @@ class MailManager:
                             smtp_server.login(self.__settings.mail_from, self.__settings.mail_password)
                             smtp_server.sendmail(self.__settings.mail_from, recipients, msg.as_string())
 
-                        self.__last_time_send = int(datetime.timestamp(datetime.now()))
+                        self.__last_time_send = time.time()
                     except smtplib.SMTPException as e:
                         print(f"SMTP error occurred: {e}")
                     except Exception as e:  # Catch any other unexpected exceptions
