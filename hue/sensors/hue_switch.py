@@ -30,10 +30,9 @@ class HueSwitch(HueSensorABC, ISwitch):
         self.last_states.append(state)
 
     def state_changed(self):
-        try:
-            return self.last_states[-1] != self.last_states[-2]
-        except IndexError:
-            return False
+        if len(self.last_states) < 2:
+            return True
+        return self.last_states[-1] != self.last_states[-2]
 
     def is_release_long_click(self):
         if len(self.last_states) >= 2:

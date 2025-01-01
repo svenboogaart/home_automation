@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 
 ENV_HUE_USER_KEY = "HUE_USER"
 ENV_HUE_IP_ADDRESS_KEY = "HUE_IP_ADDRESS"
+HUE_API_V2_OAUTH_TOKEN = "HUE_API_V2_OAUTH_TOKEN"
+HUE_API_V2_OAUTH_USERNAME = "HUE_API_V2_OAUTH_USERNAME"
 LOG_DATA = "LOG_DATA"
 MP3_PATH_ALARM = "MP3_PATH_ALARM"
 MP3_PATH_ACTIVATED = "MP3_PATH_ACTIVATED"
@@ -29,6 +31,9 @@ class Settings:
         load_dotenv()
         self.hue_username = os.getenv(ENV_HUE_USER_KEY, None)
         self.hue_ip_address = os.getenv(ENV_HUE_IP_ADDRESS_KEY, None)
+        self.hue_api_v2_oauth_token = os.getenv(HUE_API_V2_OAUTH_TOKEN, None)
+        self.hue_api_v2_username = os.getenv(HUE_API_V2_OAUTH_USERNAME, None)
+
         self.twilio_auth_token = os.getenv(TWILIO_AUTH_TOKEN, None)
         self.twilio_account_ssd = os.getenv(TWILIO_ACCOUNT_SID, None)
         self.twilio_phone_number = os.getenv(TWILIO_PHONE_NUMBER, None)

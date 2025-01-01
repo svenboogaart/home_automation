@@ -4,6 +4,7 @@ import time
 from datetime import datetime
 
 from helpers.enums.hue_colors import HueColor
+from interfaces.handlers.i_contact_sensor_handler import IContactSensorHandler
 from interfaces.handlers.i_daylight_sensor_handler import IDaylightSensorHandler
 from interfaces.handlers.i_temperature_sensor_handler import ITemperatureSensorHandler
 from models.managers.audio_manager import AudioManager
@@ -22,6 +23,7 @@ class Brain:
     def __init__(self, database_layer, lights_manager: LightsManager, switches_manager: SwitchesManager,
                  motion_sensor_manager: MotionSensorManager, temperature_sensor_handler: ITemperatureSensorHandler,
                  daylight_sensor_handler: IDaylightSensorHandler,
+                 contact_sensor_handler: IContactSensorHandler,
                  audio_manager: AudioManager, sms_manager: SmsManager,
                  mail_manager: MailManager, settings: Settings):
         self.__database_layer = database_layer
@@ -30,6 +32,7 @@ class Brain:
         self.__motion_sensor_manager = motion_sensor_manager
         self.__daylight_sensor_handler = daylight_sensor_handler
         self.__temperature_sensor_handler = temperature_sensor_handler
+        self.__contact_sensor_handler = contact_sensor_handler
         self.__audio_manager = audio_manager
         self.__mail_manager = mail_manager
         self.__sms_manager = sms_manager
@@ -63,6 +66,7 @@ class Brain:
         self.__motion_sensor_manager.update_motion_sensors()
         self.__daylight_sensor_handler.update_daylight_sensors()
         self.__temperature_sensor_handler.update_temperature_sensors()
+        self.__contact_sensor_handler.update_contact_sensors()
 
     def __log_data(self):
         try:
@@ -74,6 +78,7 @@ class Brain:
                 self.__database_layer.log_daylight_sensors(self.__daylight_sensor_handler.get_daylight_sensors())
                 self.__database_layer.log_temperature_sensors(
                     self.__temperature_sensor_handler.get_temperature_sensors())
+                self.__database_layer.log_contact_sensors(self.__contact_sensor_handler.get_contact_sensors())
 
                 for switch in self.__switches_manager.get_switches():
                     if switch.state_changed():
@@ -94,6 +99,14 @@ class Brain:
                 for temperature_sensor in self.__temperature_sensor_handler.get_temperature_sensors():
                     if temperature_sensor.state_changed():
                         self.__database_layer.log_temperature_sensor_event(temperature_sensor)
+
+                for contact_sensor in self.__contact_sensor_handler.get_contact_sensors():
+                    if contact_sensor.state_changed():
+                        self.__database_layer.log_contact_sensor_event(contact_sensor)
+                        print(
+                            f'Contact sensor state changed {contact_sensor.get_name()}, contact {contact_sensor.has_contact()}.')
+
+
         except Exception as e:
             print(f"Failed to save the data in the database {e}")
 

@@ -3,11 +3,12 @@ import json
 import requests
 
 from hue.hue_connection_settings import HueConnectionSettings
+from interfaces.i_hue_connector import IHueConnector
 
 DISCOVER_PATH = "https://discovery.meethue.com/"
 
 
-class HueConnector:
+class HueConnector(IHueConnector):
 
     def __init__(self, settings):
         self.settings = settings
@@ -36,8 +37,12 @@ class HueConnector:
             print(exception)
             return None
 
+    def run_get_request_v2(self, path):
+        pass
+
+
     def get_full_path(self, path):
-        return f"{self.settings.hue_ip_address}/api/{self.settings.hue_username}/{path}"
+        return f"http://{self.settings.hue_ip_address}/api/{self.settings.hue_username}/{path}"
 
     def get_connection_settings(self):
         """

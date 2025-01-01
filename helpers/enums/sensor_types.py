@@ -6,3 +6,4 @@ class SensorType(Enum):
     DAYLIGHT = "Daylight"
     SWITCH = "ZLLSwitch"
     TEMPERATURE = "ZLLTemperature"
+    CONTACT = "contact"

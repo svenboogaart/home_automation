@@ -80,10 +80,13 @@ class HueLightsHandler(HueDataLoaderAbc, ILightsHandler):
                         hue = json_light["state"]["hue"]
                         saturation = json_light["state"]["sat"]
                     elif light_type == 'Color temperature light':
+                        # no special fields for this type
+                        pass
+                    elif light_type == 'Dimmable light':
+                        # no special fields for this type
                         pass
                     else:
                         print(f"no method available for lights of type: {light_type}")
-
                 except KeyError as e:
                     print(f"Failed to load data: {e}")
                     brightness = "0"  # Default value
