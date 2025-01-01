@@ -1,7 +1,6 @@
 """Contains all the processing logic for home automation."""
 
 import time
-from datetime import datetime
 
 from helpers.enums.hue_colors import HueColor
 from interfaces.handlers.i_contact_sensor_handler import IContactSensorHandler
@@ -40,6 +39,8 @@ class Brain:
         self.__sms_send_after_alarm_activated = False
         self.__alarm_active = False
         self.__alarm_activated_timestamp = 0
+        self.__mails_send_after_device_no_contact = 0
+        self._contact_sensor_not_connected_detected_timestamp = 0
 
     def control_automation(self):
         self.start_brain()
@@ -102,9 +103,9 @@ class Brain:
 
                 for contact_sensor in self.__contact_sensor_handler.get_contact_sensors():
                     if contact_sensor.state_changed():
-                        self.__database_layer.log_contact_sensor_event(contact_sensor)
                         print(
-                            f'Contact sensor state changed {contact_sensor.get_name()}, contact {contact_sensor.has_contact()}.')
+                            f'Contact sensor {contact_sensor.get_name()} state changed , contact {contact_sensor.has_contact()}.')
+                        self.__database_layer.log_contact_sensor_event(contact_sensor)
 
 
         except Exception as e:
@@ -114,6 +115,7 @@ class Brain:
         self.__process_switch_events()
         self.__process_motion_events()
         self.__process_light_events()
+        self.__process_contact_sensors()
 
     def __process_light_events(self):
         if self.__alarm_active:
@@ -151,10 +153,10 @@ class Brain:
                         self.__audio_manager.play_activated_sound()
                         print("Alarm activated")
                         self.__alarm_active = True
-                        self.__alarm_activated_timestamp = int(datetime.timestamp(datetime.now()))
+                        self.__alarm_activated_timestamp = int(time.time())
 
     def __get_seconds_after_alarm_activate(self) -> int:
-        return int(datetime.timestamp(datetime.now())) - self.__alarm_activated_timestamp
+        return int(time.time()) - self.__alarm_activated_timestamp
 
     def __process_motion_events(self):
         for motion_sensor in self.__motion_sensor_manager.get_motion_sensors():
@@ -166,7 +168,8 @@ class Brain:
                             self.__audio_manager.play_alarm_sound()
                             self.__audio_manager.say_something("Intruder detected, calling the police")
                         if self.__settings.send_mail:
-                            self.__mail_manager.send_mail("Intruder detected", self.__settings.mail_to)
+                            self.__mail_manager.send_mail("Intruder detected", self.__settings.mail_to,
+                                                          f"Motion detected {self.__settings.location}")
                         if not self.__sms_send_after_alarm_activated:
                             self.__sms_manager.send_sms("Intruder alarm")
                         if self.__settings.hue_status_light:
@@ -175,3 +178,33 @@ class Brain:
                         print("Alarm is activating, ignoring the first seconds")
                 else:
                     print("Motion detected, but alarm is not active.")
+
+    def __process_contact_sensors(self):
+        loop_contact_not_connected = False
+        loop_contact_state_changed = False
+
+        for contact_sensor in self.__contact_sensor_handler.get_contact_sensors():
+            if not contact_sensor.has_contact():
+                loop_contact_not_connected = True
+            if contact_sensor.state_changed():
+                loop_contact_state_changed = True
+
+        if loop_contact_not_connected:
+            if self._contact_sensor_not_connected_detected_timestamp == 0:
+                self._contact_sensor_not_connected_detected_timestamp = time.time()
+            else:
+                elapsed_time = time.time() - self._contact_sensor_not_connected_detected_timestamp
+                if elapsed_time > self.__settings.delay_mail_open_contact_seconds and self.__mails_send_after_device_no_contact < 2:
+                    if self.__settings.send_mail:
+                        self.__mail_manager.send_mail(
+                            f"Contact sensor not connected for {round(elapsed_time, 0)} seconds.",
+                            self.__settings.mail_to)
+                        self.__mails_send_after_device_no_contact += 1
+                        self._contact_sensor_not_connected_detected_timestamp = 0
+                elif self.__mails_send_after_device_no_contact < 2:
+                    print(
+                        f'Elapsed time {elapsed_time} since contact not connected anymore, sending mail after {self.__settings.delay_mail_open_contact_seconds} seconds.')
+
+        elif loop_contact_state_changed and not loop_contact_not_connected:
+            self._contact_sensor_not_connected_detected_timestamp = 0
+            self.__mails_send_after_device_no_contact = 0

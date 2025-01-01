@@ -29,7 +29,7 @@ class HueContactLoaderV2(HueDataLoaderAbc):
 
                         name = single_sensor['data'][0]['metadata']['name']
                     except Exception as load_single_sensor_exception:
-                        print(f"failed to find sensor data for ${sensor_id}, exception ${load_single_sensor_exception}")
+                        print(f"failed to find sensor data for {sensor_id}, exception {load_single_sensor_exception}")
                         name = sensor_id
                     hue_contacts.append(
                         HueContactSensor(sensor_id, sensor_id, name,
@@ -37,7 +37,7 @@ class HueContactLoaderV2(HueDataLoaderAbc):
             return hue_contacts
 
         except Exception as e:
-            print(f'Failed to load the contact sensors, exception ${e}')
+            print(f'Failed to load the contact sensors, exception {e}')
             return []
 
     @staticmethod

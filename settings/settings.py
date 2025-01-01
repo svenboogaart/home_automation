@@ -19,6 +19,7 @@ TWILIO_PHONE_NUMBER = "TWILIO_PHONE_NUMBER"
 SMS_RECEIVER_NUMBER = "SMS_RECEIVER_NUMBER"
 HUE_STATUS_LIGHT_ID = "HUE_STATUS_LIGHT_ID"
 SEND_MAIL = "SEND_MAIL"
+DELAY_MAIL_OPEN_CONTACT_SECONDS = "DELAY_MAIL_OPEN_CONTACT_SECONDS"
 LOCATION = "LOCATION"
 MAIL_TO = "MAIL_TO"
 MAIL_FROM = "MAIL_FROM"
@@ -45,6 +46,7 @@ class Settings:
         self.mp3_path_deactivated = os.getenv(MP3_PATH_DEACTIVATED, None)
         self.should_log_data = os.getenv(LOG_DATA, None) == "True"
         self.send_mail = os.getenv(SEND_MAIL, None) == "True"
+        self.delay_mail_open_contact_seconds = int(os.getenv(DELAY_MAIL_OPEN_CONTACT_SECONDS, 60))
         self.mail_from = os.getenv(MAIL_FROM, None)
         self.mail_password = os.getenv(MAIL_PASSWORD, None)
         self.location = os.getenv(LOCATION, None)
