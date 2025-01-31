@@ -46,18 +46,21 @@ class HueSensorsLoader(HueDataLoaderAbc):
 
     def get_sensor_json(self, sensor_type: SensorType = None):
         sensors_json = {}
-        sensor_data = self.hue_connector.run_get_request("sensors")
-        if sensor_data:
-            sensors_from_json = json.loads(sensor_data)
-            for key, json_sensor in sensors_from_json.items():
-                if sensor_type:
-                    json_sensor_type = json_sensor["type"]
-                    sensor_type_enum_from_json = HueEventHelper.get_sensor_enum_from_string(json_sensor_type)
-                    if sensor_type == sensor_type_enum_from_json:
+        try:
+            sensor_data = self.hue_connector.run_get_request("sensors")
+            if sensor_data:
+                sensors_from_json = json.loads(sensor_data)
+                for key, json_sensor in sensors_from_json.items():
+                    if sensor_type:
+                        json_sensor_type = json_sensor["type"]
+                        sensor_type_enum_from_json = HueEventHelper.get_sensor_enum_from_string(json_sensor_type)
+                        if sensor_type == sensor_type_enum_from_json:
+                            sensors_json[key] = json_sensor
+                    else:
                         sensors_json[key] = json_sensor
-                else:
-                    sensors_json[key] = json_sensor
 
+        except Exception as e:
+            print(f'Failed to get sensor data , {e}')
         return sensors_json
 
     def __create_switch_sensor_from_json(self, motion_sensor_id, json_sensor) -> HueSwitch:
