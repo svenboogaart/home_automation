@@ -36,8 +36,9 @@ class HueSwitch(HueSensorABC, ISwitch):
 
     def is_release_long_click(self):
         if len(self.last_states) >= 2:
-            return (self.last_states[-1].button_event.is_released_event() and
-                    self.last_states[-2].button_event.is_hold_event())
+            if self.last_states[-1].button_event and self.last_states[-2].button_event:
+                return (self.last_states[-1].button_event.is_released_event() and
+                        self.last_states[-2].button_event.is_hold_event())
         return False
 
     def get_last_event_code(self) -> int:

@@ -3,7 +3,7 @@ import sys
 import threading
 from threading import Thread
 
-from playsound import playsound
+#from playsound import playsound
 
 from settings.settings import Settings
 
@@ -14,10 +14,11 @@ class AudioManager:
     def play_audio_file(file_path: str):
         def play_audio_file_threaded():
             try:
-                if os.path.isfile(file_path):
-                    playsound(file_path)
-                else:
-                    print(f"Failed to play audio, {file_path} file not found ")
+                print("playsound")
+                # if os.path.isfile(file_path):
+                #     playsound(file_path)
+                # else:
+                #     print(f"Failed to play audio, {file_path} file not found ")
             except Exception as e:
                 print(f"Failed to send message : {e}")
 

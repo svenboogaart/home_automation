@@ -103,6 +103,8 @@ class HueSensorsLoader(HueDataLoaderAbc):
 
     @staticmethod
     def __get_timestamp_from_string(time_string: str, time_format: str = '%Y-%m-%dT%H:%M:%S'):
+        if not time_string or time_string == 'none':
+            return 0
         try:
             time_object = time.strptime(time_string, time_format)
             return time.mktime(time_object)
