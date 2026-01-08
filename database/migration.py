@@ -1,6 +1,8 @@
 import os
 import sqlite3
 
+from helpers.log_helper import LogHelper
+
 
 class Migration:
 
@@ -17,7 +19,7 @@ class Migration:
         cur = self.connection.cursor()
         self.create_tables_if_not_exist(cur)
         self.connection.commit()
-        print("Database migrated")
+        LogHelper.get_logger().info("Database migrated")
         self.connection.close()
         # committing our connection
 

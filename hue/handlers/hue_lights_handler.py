@@ -4,6 +4,7 @@ import time
 from typing import List
 
 from helpers.enums.device_state import DeviceState
+from helpers.log_helper import LogHelper
 from hue.hue_connector import HueConnector
 from hue.hue_data_loader_abc import HueDataLoaderAbc
 from hue.lights.hue_light import HueLight
@@ -71,7 +72,7 @@ class HueLightsHandler(HueDataLoaderAbc, ILightsHandler):
                 try:
                     brightness = json_light["state"]["bri"]
                 except KeyError as e:
-                    print(f"Missing brightness: {e}")
+                    LogHelper.get_logger().warning(f"Missing brightness: {e}")
                     brightness = "0"  # Default value
 
                 try:
@@ -86,9 +87,9 @@ class HueLightsHandler(HueDataLoaderAbc, ILightsHandler):
                         # no special fields for this type
                         pass
                     else:
-                        print(f"no method available for lights of type: {light_type}")
+                        LogHelper.get_logger().warning(f"no method available for lights of type: {light_type}")
                 except KeyError as e:
-                    print(f"Failed to load data: {e}")
+                    LogHelper.get_logger().error(f"Failed to load data: {e}")
                     brightness = "0"  # Default value
                     hue = 0
                     saturation = 0
@@ -96,7 +97,7 @@ class HueLightsHandler(HueDataLoaderAbc, ILightsHandler):
             return HueLight(light_id, unique_id, name, min_dim_level, max_lumen, light_type,
                             LightState(brightness, hue, saturation, state), time.time())
         except Exception as e:
-            print("Failed to create light object from json. ", e)
+            LogHelper.get_logger().warning("Failed to create light object from json. ", e)
             # print(e)
             return None
 

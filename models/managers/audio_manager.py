@@ -3,6 +3,7 @@ import sys
 import threading
 from threading import Thread
 
+from helpers.log_helper import LogHelper
 #from playsound import playsound
 
 from settings.settings import Settings
@@ -20,7 +21,7 @@ class AudioManager:
                 # else:
                 #     print(f"Failed to play audio, {file_path} file not found ")
             except Exception as e:
-                print(f"Failed to send message : {e}")
+                LogHelper.get_logger().error(f"Failed to send message : {e}")
 
         thread = threading.Thread(target=play_audio_file_threaded)
         thread.start()

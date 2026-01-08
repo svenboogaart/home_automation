@@ -2,6 +2,7 @@ import time
 from datetime import datetime
 from typing import List
 
+from helpers.log_helper import LogHelper
 from hue.hue_connector_v2 import HueConnectorV2
 from hue.hue_data_loader_abc import HueDataLoaderAbc
 from hue.sensors.hue_contact_sensor import HueContactSensor, ContactState
@@ -29,7 +30,7 @@ class HueContactLoaderV2(HueDataLoaderAbc):
 
                         name = single_sensor['data'][0]['metadata']['name']
                     except Exception as load_single_sensor_exception:
-                        print(f"failed to find sensor data for {sensor_id}, exception {load_single_sensor_exception}")
+                        LogHelper.get_logger().warning(f"failed to find sensor data for {sensor_id}, exception {load_single_sensor_exception}")
                         name = sensor_id
                     hue_contacts.append(
                         HueContactSensor(sensor_id, sensor_id, name,
@@ -37,7 +38,7 @@ class HueContactLoaderV2(HueDataLoaderAbc):
             return hue_contacts
 
         except Exception as e:
-            print(f'Failed to load the contact sensors, exception {e}')
+            LogHelper.get_logger().warning(f'Failed to load the contact sensors, exception {e}')
             return []
 
     @staticmethod

@@ -2,6 +2,7 @@ import json
 
 import requests
 
+from helpers.log_helper import LogHelper
 from hue.hue_connection_settings import HueConnectionSettings
 from interfaces.i_hue_connector import IHueConnector
 from settings.settings import Settings
@@ -40,8 +41,8 @@ class HueConnectorV2(IHueConnector):
                 return request.json()  # In v2, data is usually returned as JSON
             return None
         except Exception as exception:
-            print(f"Exception in run_get_request v2, {full_path}")
-            print(exception)
+            LogHelper.get_logger().warning(f"Exception in run_get_request v2, {full_path}")
+            LogHelper.get_logger().warning(exception)
             return None
 
     def get_full_path(self, path):
@@ -56,8 +57,8 @@ class HueConnectorV2(IHueConnector):
                 return request.text
             return None
         except Exception as e:
-            print("exception in run_put_request")
-            print(e)
+            LogHelper.get_logger().warning("exception in run_put_request")
+            LogHelper.get_logger().warning(e)
             return None
 
     def get_connection_settings(self):
@@ -71,8 +72,8 @@ class HueConnectorV2(IHueConnector):
             connection_id = loaded_data[0]["id"]
             internal_ipaddress = loaded_data[0]["internalipaddress"]
             port = loaded_data[0]["port"]
-            print("Can connect")
+            LogHelper.get_logger().info("Can connect")
             return HueConnectionSettings(connection_id, internal_ipaddress, port)
 
-        print("Connecting to the bridge not possible.")
+        LogHelper.get_logger().error("Connecting to the bridge not possible.")
         return None

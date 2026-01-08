@@ -2,7 +2,9 @@
 
 import time
 
+from helpers.date_time_helper import DateTimeHelper
 from helpers.enums.hue_colors import HueColor
+from helpers.log_helper import LogHelper
 from interfaces.handlers.i_contact_sensor_handler import IContactSensorHandler
 from interfaces.handlers.i_daylight_sensor_handler import IDaylightSensorHandler
 from interfaces.handlers.i_temperature_sensor_handler import ITemperatureSensorHandler
@@ -44,14 +46,14 @@ class Brain:
 
     def control_automation(self):
         self.start_brain()
-        print("The home is now running in automation mode.")
+        LogHelper.get_logger().info("The home is now running in automation mode.")
         start_time = time.time()
         while True:
             time.sleep(1.0 - ((time.time() - start_time) % 1.0))
             self.update()
 
     def start_brain(self):
-        print(f"Preparing brain, Alarm state: {self.__alarm_active}")
+        LogHelper.get_logger().info(f"Preparing brain, Alarm state: {self.__alarm_active}")
         # self.database_layer.store_lights(self.lights_manager.get_lights())
         # self.database_layer.store_switches(self.switches_manager.get_switches())
 
@@ -103,13 +105,12 @@ class Brain:
 
                 for contact_sensor in self.__contact_sensor_handler.get_contact_sensors():
                     if contact_sensor.state_changed():
-                        print(
-                            f'Contact sensor {contact_sensor.get_name()} state changed , contact {contact_sensor.has_contact()}.')
+                        LogHelper.get_logger().info(f'Contact sensor {contact_sensor.get_name()} state changed , contact {contact_sensor.has_contact()}.')
                         self.__database_layer.log_contact_sensor_event(contact_sensor)
 
 
         except Exception as e:
-            print(f"Failed to save the data in the database {e}")
+            LogHelper.get_logger().error(f"Failed to save the data in the database {e}")
 
     def __event_based_processing(self):
         self.__process_switch_events()
@@ -144,14 +145,14 @@ class Brain:
                     if self.__alarm_active:
                         self.__lights_manager.alarm_light(self.__settings.hue_status_light, 0.5, 0.5, 2, HueColor.GREEN)
                         self.__audio_manager.play_deactivate_sound()
-                        print("Alarm deactivated")
+                        LogHelper.get_logger().info("Alarm deactivated")
                         self.__alarm_active = False
                         self.__alarm_activated_timestamp = 0
                 elif switch.is_release_long_click() and switch.button_on_used():
                     if not self.__alarm_active:
                         self.__lights_manager.alarm_light(self.__settings.hue_status_light, 0.5, 0.5, 4)
                         self.__audio_manager.play_activated_sound()
-                        print("Alarm activated")
+                        LogHelper.get_logger().info("Alarm activated")
                         self.__alarm_active = True
                         self.__alarm_activated_timestamp = int(time.time())
 
@@ -163,7 +164,7 @@ class Brain:
             if motion_sensor.new_motion_detected():
                 if self.__alarm_active:
                     if self.__get_seconds_after_alarm_activate() > 10:
-                        print("Motion detected!")
+                        LogHelper.get_logger().info("Motion detected!")
                         if self.__settings.alarm_play_sound:
                             self.__audio_manager.play_alarm_sound()
                             self.__audio_manager.say_something("Intruder detected, calling the police")
@@ -175,9 +176,9 @@ class Brain:
                         if self.__settings.hue_status_light:
                             self.__lights_manager.alarm_light(self.__settings.hue_status_light, 1.0, 2.0, 2)
                     else:
-                        print("Alarm is activating, ignoring the first seconds")
+                        LogHelper.get_logger().info("Alarm is activating, ignoring the first seconds")
                 else:
-                    print("Motion detected, but alarm is not active.")
+                    LogHelper.get_logger().info("Motion detected, but alarm is not active.")
 
     def __process_contact_sensors(self):
         loop_contact_not_connected = False
@@ -202,8 +203,7 @@ class Brain:
                         self.__mails_send_after_device_no_contact += 1
                         self._contact_sensor_not_connected_detected_timestamp = 0
                 elif self.__mails_send_after_device_no_contact < 2:
-                    print(
-                        f'Elapsed time {elapsed_time} since contact not connected anymore, sending mail after {self.__settings.delay_mail_open_contact_seconds} seconds.')
+                    LogHelper.get_logger().info(f'Elapsed time {elapsed_time} since contact not connected anymore, sending mail after {self.__settings.delay_mail_open_contact_seconds} seconds.')
 
         elif loop_contact_state_changed and not loop_contact_not_connected:
             self._contact_sensor_not_connected_detected_timestamp = 0

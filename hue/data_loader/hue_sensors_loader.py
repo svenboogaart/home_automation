@@ -4,6 +4,7 @@ from typing import List
 
 from helpers.enums.sensor_types import SensorType
 from helpers.hue_event_helper import HueEventHelper
+from helpers.log_helper import LogHelper
 from hue.hue_connector import HueConnector
 from hue.hue_data_loader_abc import HueDataLoaderAbc
 from hue.sensors.hue_daylight_sensor import HueDayLightSensor
@@ -60,7 +61,7 @@ class HueSensorsLoader(HueDataLoaderAbc):
                         sensors_json[key] = json_sensor
 
         except Exception as e:
-            print(f'Failed to get sensor data , {e}')
+            LogHelper.get_logger().warning(f'Failed to get sensor data , {e}')
         return sensors_json
 
     def __create_switch_sensor_from_json(self, motion_sensor_id, json_sensor) -> HueSwitch:
@@ -109,6 +110,6 @@ class HueSensorsLoader(HueDataLoaderAbc):
             time_object = time.strptime(time_string, time_format)
             return time.mktime(time_object)
         except Exception as e:
-            print(f"Failed to convert string {time_string} to a valid timestamp {e}")
+            LogHelper.get_logger().warning(f"Failed to convert string {time_string} to a valid timestamp {e}")
 
         return 0

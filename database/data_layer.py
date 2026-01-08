@@ -2,6 +2,7 @@ import os
 import sqlite3
 from typing import List, Tuple
 
+from helpers.log_helper import LogHelper
 from interfaces.lights.i_light import ILight
 from interfaces.sensors.i_contact_sensor import IContactSensor
 from interfaces.sensors.i_daylight_sensor import IDaylightSensor
@@ -123,10 +124,10 @@ class DataLayer:
             self.connection.commit()
         except sqlite3.IntegrityError as e:
             # Handle specific integrity errors (e.g., constraint violations)
-            print(f"Integrity error: {e}")
+            LogHelper.get_logger().error(f"Integrity error: {e}")
         except sqlite3.DatabaseError as e:
             # Simple error handling with a basic print statement
-            print(f"Database error: {e}")
+            LogHelper.get_logger().error(f"Database error: {e}")
         except Exception as e:
             # Catch all other unexpected exceptions
-            print(f"Unexpected error: {e}")
+            LogHelper.get_logger().error(f"Unexpected error: {e}")

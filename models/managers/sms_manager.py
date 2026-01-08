@@ -1,5 +1,5 @@
 # from twilio.rest import Client
-
+from helpers.log_helper import LogHelper
 from settings.settings import Settings
 
 
@@ -20,7 +20,7 @@ class SmsManager:
             # )
             # self.sms_send_after_alarm_activated = True
             # print(f"Sms has been send: {message.sid}")
-            print(f"TODO implement sending sms {content}")
+            LogHelper.get_logger().info(f"TODO implement sending sms {content}")
 
     def get_sms_was_send(self):
         return self._sms_send_after_alarm_activated

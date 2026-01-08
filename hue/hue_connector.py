@@ -2,6 +2,7 @@ import json
 
 import requests
 
+from helpers.log_helper import LogHelper
 from hue.hue_connection_settings import HueConnectionSettings
 from interfaces.i_hue_connector import IHueConnector
 
@@ -12,6 +13,7 @@ class HueConnector(IHueConnector):
 
     def __init__(self, settings):
         self.settings = settings
+        self._timeout_counter = 0
 
     def run_put_request(self, path, data):
         try:
@@ -29,17 +31,22 @@ class HueConnector(IHueConnector):
         full_path = self.get_full_path(path)
         try:
             request = requests.get(full_path, timeout=0.1)
+            self._timeout_counter = 0
             if request.status_code == 200:
                 return request.text
             return None
+        except requests.exceptions.Timeout:
+            self._timeout_counter += 1
+            if self._timeout_counter % 1 == 0:
+                LogHelper.get_logger().warning(
+                    f"Received {self._timeout_counter} timeouts in a row for get requests, latest request {full_path}")
         except Exception as exception:
-            print(f"exception in run_get_request , {full_path}")
-            print(exception)
+            LogHelper.get_logger().warning(f"exception in run_get_request , {full_path}")
+            LogHelper.get_logger().warning(exception)
             return None
 
     def run_get_request_v2(self, path):
         pass
-
 
     def get_full_path(self, path):
         return f"http://{self.settings.hue_ip_address}/api/{self.settings.hue_username}/{path}"
@@ -55,7 +62,7 @@ class HueConnector(IHueConnector):
             connection_id = loaded_data[0]["id"]
             internal_ipaddress = loaded_data[0]["internalipaddress"]
             port = loaded_data[0]["port"]
-            print("Can connect")
+            LogHelper.get_logger().info("Can connect")
             return HueConnectionSettings(connection_id, internal_ipaddress, port)
 
         print("Connecting to the bridge not possible.")

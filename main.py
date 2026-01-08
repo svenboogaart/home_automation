@@ -1,6 +1,9 @@
+import logging
+
 from automation.brain import Brain
 from database.data_layer import DataLayer
 from database.migration import Migration
+from helpers.log_helper import LogHelper
 from hue.data_loader.api_v2.hue_contact_loader import HueContactLoaderV2
 from hue.data_loader.hue_sensors_loader import HueSensorsLoader
 from hue.handlers.hue_contact_handler import HueContactHandler
@@ -20,7 +23,8 @@ from models.managers.switches_manager import SwitchesManager
 from settings.settings import Settings
 
 if __name__ == '__main__':
-    print("Starting home automation")
+    logger = LogHelper.get_logger(log_to="both", level=logging.DEBUG)
+    LogHelper.get_logger().info("Starting home automation")
     settings = Settings()
     database_layer = DataLayer()
 
