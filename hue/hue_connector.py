@@ -23,8 +23,8 @@ class HueConnector(IHueConnector):
                 return request.text
             return None
         except Exception as e:
-            print("exception in run_put_request")
-            print(e)
+            LogHelper.get_logger().warning(f"exception in run_put_request")
+            LogHelper.get_logger().warning(e)
             return None
 
     def run_get_request(self, path):
@@ -37,7 +37,8 @@ class HueConnector(IHueConnector):
             return None
         except requests.exceptions.Timeout:
             self._timeout_counter += 1
-            if self._timeout_counter % 1 == 0:
+            #only log after x amount of timed out get requests
+            if self._timeout_counter % 30 == 0:
                 LogHelper.get_logger().warning(
                     f"Received {self._timeout_counter} timeouts in a row for get requests, latest request {full_path}")
         except Exception as exception:
