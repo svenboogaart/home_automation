@@ -35,7 +35,8 @@ class Migration:
 
         cur.execute('''
            CREATE TABLE IF NOT EXISTS light_states(
-                light_id INTEGER,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                light_id TEXT,
                 brightness INTEGER,
                 hue INTEGER,
                 saturation INTEGER,
@@ -43,6 +44,27 @@ class Migration:
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(light_id) REFERENCES lights(id)
            )''')
+
+        light_state_columns = cur.execute("PRAGMA table_info(light_states)").fetchall()
+        if not any(column[1] == "id" and column[5] == 1 for column in light_state_columns):
+            cur.execute("ALTER TABLE light_states RENAME TO light_states_old")
+            cur.execute('''
+               CREATE TABLE light_states(
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    light_id TEXT,
+                    brightness INTEGER,
+                    hue INTEGER,
+                    saturation INTEGER,
+                    state TEXT,
+                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY(light_id) REFERENCES lights(id)
+               )''')
+            cur.execute('''
+               INSERT INTO light_states (light_id, brightness, hue, saturation, state, timestamp)
+               SELECT light_id, brightness, hue, saturation, state, timestamp
+               FROM light_states_old
+            ''')
+            cur.execute("DROP TABLE light_states_old")
 
         cur.execute('''
             CREATE TABLE IF NOT EXISTS switches(
