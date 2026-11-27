@@ -7,10 +7,11 @@ Hue based easy to extend for different platfroms.
 
 Some options
 
-- Send an e-mail if motions is detected
-- Options to activate home security by using the hue switch.
+- Send an e-mail if contact sensor is not connected for x amount of seconds (e.g. you left your fridge open)
+- Options to activate home security by using the hue switch., hold a specific button for x amount of seconds to toggle 
 - Flash your lights in any color if motions is detected
 - Play alarm sound if motions is detected
+- E-mail if motions is detected
 
 ## Requirements
 
