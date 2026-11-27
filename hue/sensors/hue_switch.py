@@ -9,7 +9,7 @@ from interfaces.sensors.i_switch import ISwitch
 
 @dataclass
 class SwitchState:
-    button_event: HueDimmerEvent
+    button_event: HueDimmerEvent | None
     last_updated: float
 
 
@@ -41,26 +41,26 @@ class HueSwitch(HueSensorABC, ISwitch):
                         self.last_states[-2].button_event.is_hold_event())
         return False
 
-    def get_last_event_code(self) -> int:
-        return self.get_state().button_event
+    def get_last_event_code(self) -> int | None:
+        button_event = self._get_button_event()
+        return button_event.value if button_event is not None else None
+
+    def _get_button_event(self) -> HueDimmerEvent | None:
+        if not self.last_states:
+            return None
+        return self.last_states[-1].button_event
 
     def is_pressed_event(self):
-        try:
-            return self.last_states[-1].button_event.is_pressed_event()
-        except IndexError:
-            return False
+        button_event = self._get_button_event()
+        return button_event is not None and button_event.is_pressed_event()
 
     def is_released_event(self):
-        try:
-            return self.last_states[-1].button_event.is_released_event()
-        except IndexError:
-            return False
+        button_event = self._get_button_event()
+        return button_event is not None and button_event.is_released_event()
 
     def is_hold_event(self):
-        try:
-            return self.last_states[-1].button_event.is_hold_event()
-        except IndexError:
-            return False
+        button_event = self._get_button_event()
+        return button_event is not None and button_event.is_hold_event()
 
     def get_unique_id(self):
         return self.unique_id
@@ -74,13 +74,9 @@ class HueSwitch(HueSensorABC, ISwitch):
         return self.name
 
     def button_off_used(self) -> bool:
-        try:
-            return self.last_states[-1].button_event.is_off_event()
-        except IndexError:
-            return False
+        button_event = self._get_button_event()
+        return button_event is not None and button_event.is_off_event()
 
     def button_on_used(self) -> bool:
-        try:
-            return self.last_states[-1].button_event.is_on_event()
-        except IndexError:
-            return False
+        button_event = self._get_button_event()
+        return button_event is not None and button_event.is_on_event()

@@ -10,7 +10,7 @@ class ISwitch(IDevice, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_last_event_code(self) -> int:
+    def get_last_event_code(self) -> int | None:
         pass
 
     @abstractmethod
